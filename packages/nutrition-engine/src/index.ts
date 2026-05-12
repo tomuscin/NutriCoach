@@ -130,3 +130,6 @@ export function calculateDailyBalance(params: {
     overallProgress: target.calories > 0 ? (consumed.calories / target.calories) * 100 : 0,
   }
 }
+
+// ─── Trend Analyzers (re-export from analyzers.ts) ───────────────────────────
+export { buildDailySummary, analyzeNutritionTrend, projectGoalDate, isProteinSufficient } from './analyzers'
