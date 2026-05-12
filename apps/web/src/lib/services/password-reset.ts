@@ -6,6 +6,8 @@ import { hash } from 'bcryptjs'
 import { logAuthEvent, generateCorrelationId } from '@/lib/auth-logger'
 import { rateLimits } from '@/lib/rate-limit'
 import { forgotPasswordSchema, resetPasswordSchema } from '@/lib/validators/auth'
+import { sendPasswordResetEmail } from '@/lib/email/email-service'
+import { logger } from '@/lib/logger'
 import type { AuthResult } from '@/types/auth'
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000 // 1 hour
@@ -33,11 +35,11 @@ export async function requestPasswordReset(
   // Always return success (prevent email enumeration)
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true },
+    select: { id: true, name: true },
   })
 
   if (!user) {
-    // Intentionally same response
+    // Intentionally same response (prevent email enumeration)
     logAuthEvent({ event: 'password_reset.requested', email, correlationId, meta: { found: false } })
     return { ok: true }
   }
@@ -62,8 +64,10 @@ export async function requestPasswordReset(
 
   logAuthEvent({ event: 'password_reset.requested', userId: user.id, email, correlationId })
 
-  // TODO ETAP 5: await sendPasswordResetEmail({ email, token })
-  console.log('[AUTH] Password reset token created (SMTP not configured yet):', { email, token: `${token.slice(0, 8)}...` })
+  // Fire-and-forget — never block response on email delivery
+  sendPasswordResetEmail(email, user.name ?? 'Użytkowniku', token).catch(err => {
+    logger.error({ err, userId: user.id }, 'password_reset.email.failed')
+  })
 
   return { ok: true }
 }

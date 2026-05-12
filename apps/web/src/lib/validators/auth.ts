@@ -37,11 +37,16 @@ export type LoginInput = z.infer<typeof loginSchema>
 export const registerSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Potwierdzenie hasła jest wymagane'),
   name: z
     .string()
     .min(2, 'Imię musi mieć co najmniej 2 znaki')
     .max(50, 'Imię jest za długie')
     .regex(/^[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\s-]+$/, 'Imię zawiera niedozwolone znaki'),
+  acceptTerms: z.boolean().refine((v) => v === true, 'Musisz zaakceptować Regulamin'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Hasła muszą być identyczne',
+  path: ['confirmPassword'],
 })
 
 export type RegisterInput = z.infer<typeof registerSchema>

@@ -62,12 +62,15 @@ export async function registerAction(
   formData: FormData
 ): Promise<AuthResult<{ userId: string }>> {
   const ip = await getClientIp()
+  const h = await headers()
   const input = {
     email: formData.get('email'),
     password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
     name: formData.get('name'),
+    acceptTerms: formData.get('acceptTerms') === 'true',
   }
-  return registerUser(input, { ip })
+  return registerUser(input, { ip, userAgent: h.get('user-agent') ?? undefined })
 }
 
 // ─── Logout action ────────────────────────────────────────────────────────────

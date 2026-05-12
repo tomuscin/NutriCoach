@@ -258,6 +258,9 @@ model User {
   updatedAt     DateTime   @updatedAt
   deletedAt     DateTime?  // GDPR soft delete
 
+  // ETAP 7 — onboarding state
+  onboardingStep Int @default(0) // 0=not started, 1-7 in progress, 8=complete
+
   // Auth.js
   accounts Account[]
   sessions Session[]
@@ -285,6 +288,11 @@ model User {
   dailyScores         DailyScore[]
   aiScheduleConfig    AIScheduleConfig?
   aiRollingSummaries  AIRollingSummary[]
+  // ETAP 7
+  consents          UserConsent[]
+  preferences       UserPreferences?
+  pushSubscriptions PushSubscription[]
+  analyticsEvents   AnalyticsEvent[]
 
   @@index([email])
   @@index([status])
@@ -1336,4 +1344,105 @@ model RuntimeMetric {
   @@index([name])
   @@index([date])
   @@map("runtime_metrics")
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ETAP 7 — REAL USER SYSTEM
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ─── USER CONSENT — GDPR / terms versioning ──────────────────────────────────
+
+model UserConsent {
+  id            String   @id @default(cuid())
+  userId        String
+  policyType    String   // "terms" | "privacy" | "health_disclaimer" | "data_processing"
+  policyVersion String   // semver e.g. "1.0"
+  acceptedAt    DateTime @default(now())
+  ip            String?
+  userAgent     String?  @db.Text
+  revokedAt     DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, policyType])
+  @@index([userId, acceptedAt])
+  @@map("user_consents")
+}
+
+// ─── USER PREFERENCES — settings, AI prefs, notification prefs ──────────────
+
+model UserPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Notification channels
+  emailNotifications Boolean @default(true)
+  pushNotifications  Boolean @default(false)
+  insightSchedule    String  @default("auto") // auto | morning | evening | all
+
+  // AI preferences
+  aiCoachingTone       String @default("balanced")     // motivating | balanced | data_driven | gentle
+  aiVerbosity          String @default("normal")       // concise | normal | detailed
+  aiRecoverySensitivity String @default("moderate")   // sensitive | moderate | aggressive
+  aiInsightTiming      String @default("auto")         // auto | morning | midday | evening
+
+  // Display preferences
+  unitSystem   String @default("metric") // metric | imperial
+  language     String @default("pl")
+  timezone     String @default("Europe/Warsaw")
+  darkMode     String @default("system") // system | dark | light
+
+  // Privacy
+  analyticsEnabled Boolean @default(true)
+  crashReporting   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+// ─── PUSH SUBSCRIPTIONS — Web Push API ───────────────────────────────────────
+
+model PushSubscription {
+  id       String @id @default(cuid())
+  userId   String
+  endpoint String @db.Text
+  p256dh   String @db.Text // public key
+  auth     String @db.Text // auth secret
+
+  deviceLabel String? // "iPhone Safari", "Chrome Desktop"
+  isActive    Boolean @default(true)
+
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("push_subscriptions")
+}
+
+// ─── ANALYTICS EVENTS — product funnel & retention ──────────────────────────
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  sessionId String?
+  event     String   // "onboarding.started", "tp.connected", "insight.viewed"…
+  properties Json?
+  page      String?
+  userAgent String?  @db.Text
+  ip        String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([event, createdAt])
+  @@index([userId, event])
+  @@index([createdAt])
+  @@map("analytics_events")
 }

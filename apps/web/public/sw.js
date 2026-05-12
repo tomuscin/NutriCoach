@@ -91,3 +91,70 @@ self.addEventListener('fetch', (event) => {
     )
   }
 })
+
+// ─── Push notification handlers ───────────────────────────────────────────────
+
+self.addEventListener('push', (event) => {
+  if (!event.data) return
+
+  let payload
+  try {
+    payload = event.data.json()
+  } catch {
+    payload = { title: 'NutriCoach', body: event.data.text() }
+  }
+
+  const title = payload.title ?? 'NutriCoach'
+  const options = {
+    body: payload.body ?? '',
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/badge-72x72.png',
+    tag: payload.tag ?? 'nutricoach-default',
+    data: payload.data ?? {},
+    actions: payload.actions ?? [],
+    requireInteraction: payload.requireInteraction ?? false,
+  }
+
+  event.waitUntil(self.registration.showNotification(title, options))
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+
+  const data = event.notification.data ?? {}
+  const url = data.url ?? '/dashboard'
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      // Focus existing window if open
+      for (const client of clients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.focus()
+          client.postMessage({ type: 'NOTIFICATION_CLICK', url })
+          return
+        }
+      }
+      // Open new window
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(url)
+      }
+    })
+  )
+})
+
+self.addEventListener('pushsubscriptionchange', (event) => {
+  // Re-subscribe on key rotation
+  event.waitUntil(
+    self.registration.pushManager
+      .subscribe({ userVisibleOnly: true, applicationServerKey: self._vapidKey })
+      .then((subscription) => {
+        return fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subscription }),
+        })
+      })
+      .catch(() => {/* silent — user will re-subscribe on next visit */})
+  )
+})
+

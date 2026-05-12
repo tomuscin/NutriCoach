@@ -1,18 +1,21 @@
-// Registration service
-// Creates user, hashes password, initializes profile + goal
+// Registration service — ETAP 7
+// Creates user, hashes password, sends verification email, logs consent
 
 import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/db'
 import { registerSchema } from '@/lib/validators/auth'
 import { logAuthEvent, generateCorrelationId } from '@/lib/auth-logger'
 import { rateLimits } from '@/lib/rate-limit'
+import { sendVerificationEmail } from '@/lib/email/email-service'
+import { trackEvent } from '@/lib/analytics/events'
 import type { AuthResult } from '@/types/auth'
 
 const BCRYPT_ROUNDS = 12
+const VERIFY_TOKEN_TTL_MS = 24 * 60 * 60 * 1000 // 24h
 
 export async function registerUser(
   input: unknown,
-  opts: { ip?: string } = {}
+  opts: { ip?: string; userAgent?: string } = {}
 ): Promise<AuthResult<{ userId: string }>> {
   const correlationId = generateCorrelationId()
 
@@ -32,7 +35,11 @@ export async function registerUser(
     return { ok: false, error: first?.message ?? 'Nieprawidłowe dane', field: first?.path[0] as string }
   }
 
-  const { email, password, name } = parsed.data
+  const { email, password, name, acceptTerms } = parsed.data
+
+  if (!acceptTerms) {
+    return { ok: false, error: 'Musisz zaakceptować Regulamin i Politykę prywatności.', field: 'acceptTerms' }
+  }
 
   // ─── Check uniqueness ─────────────────────────────────────────────────────
   const existing = await prisma.user.findUnique({
@@ -42,14 +49,13 @@ export async function registerUser(
 
   if (existing) {
     logAuthEvent({ event: 'register.duplicate_email', email, correlationId })
-    // Return same error to prevent email enumeration
     return { ok: false, error: 'Nie można założyć konta z tymi danymi.', field: 'email' }
   }
 
   // ─── Hash password ────────────────────────────────────────────────────────
   const passwordHash = await hash(password, BCRYPT_ROUNDS)
 
-  // ─── Create user + profile ────────────────────────────────────────────────
+  // ─── Create user + consent + preferences ─────────────────────────────────
   const user = await prisma.user.create({
     data: {
       email,
@@ -57,41 +63,54 @@ export async function registerUser(
       passwordHash,
       role: 'USER',
       status: 'ACTIVE',
-      // UserProfile created during onboarding (requires real data: sex, birthDate, etc.)
+      onboardingStep: 0,
+      consents: {
+        create: [
+          { policyType: 'terms', policyVersion: '1.0', ip: opts.ip, userAgent: opts.userAgent },
+          { policyType: 'privacy', policyVersion: '1.0', ip: opts.ip, userAgent: opts.userAgent },
+          { policyType: 'health_disclaimer', policyVersion: '1.0', ip: opts.ip, userAgent: opts.userAgent },
+        ],
+      },
+      preferences: {
+        create: {},
+      },
     },
-    select: { id: true, email: true },
+    select: { id: true, email: true, name: true },
   })
 
   logAuthEvent({ event: 'register.success', userId: user.id, email: user.email, correlationId })
+  await trackEvent({ userId: user.id, event: 'registration.completed', ip: opts.ip })
 
-  // ─── Email verification (foundation — real SMTP in ETAP 5) ───────────────
-  // Token generation is wired but email sending is disabled until SMTP configured
-  await createVerificationTokenFoundation(user.id, email)
+  // ─── Send verification email ──────────────────────────────────────────────
+  await createAndSendVerificationToken(user.id, user.email, user.name ?? 'sportowcze')
 
   return { ok: true, data: { userId: user.id } }
 }
 
-// ─── Email verification token (foundation) ────────────────────────────────────
-// Real email sending wired in ETAP 5 (Resend/SMTP)
-async function createVerificationTokenFoundation(userId: string, email: string): Promise<void> {
+// ─── Email verification token ──────────────────────────────────────────────────
+export async function createAndSendVerificationToken(userId: string, email: string, name: string): Promise<void> {
   try {
     const { randomBytes } = await import('crypto')
     const token = randomBytes(32).toString('hex')
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24h
+    const expires = new Date(Date.now() + VERIFY_TOKEN_TTL_MS)
 
-    // Store in Prisma VerificationToken model
-    await prisma.verificationToken.create({
-      data: {
-        identifier: email,
-        token,
-        expires,
-      },
+    // Clear any existing tokens first
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: email },
     })
 
-    logAuthEvent({ event: 'email_verify.sent', userId, email, meta: { foundation_only: true } })
-    // TODO ETAP 5: await sendVerificationEmail({ email, token, name: userName })
+    await prisma.verificationToken.create({
+      data: { identifier: email, token, expires },
+    })
+
+    // Send email (fire-and-forget — non-critical path)
+    sendVerificationEmail(email, name, token).catch(err => {
+      logAuthEvent({ event: 'email_verify.send_failed', email, meta: { error: String(err) } })
+    })
+
+    logAuthEvent({ event: 'email_verify.sent', userId, email })
   } catch (err) {
     // Non-fatal — user can request resend
-    console.error('[AUTH] Failed to create verification token:', err)
+    logAuthEvent({ event: 'email_verify.create_failed', email, meta: { error: String(err) } })
   }
 }

@@ -6,8 +6,20 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { completeOnboarding } from '@/lib/services/onboarding'
 import { redirect } from 'next/navigation'
+import { trackEvent } from '@/lib/analytics/events'
 import type { AuthResult } from '@/types/auth'
 import type { Gender, ActivityLevel, SportType } from '@prisma/client'
+
+// ─── Track step progress ──────────────────────────────────────────────────────
+export async function updateOnboardingStepAction(step: number): Promise<void> {
+  const session = await auth()
+  if (!session?.user?.id) return
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { onboardingStep: step },
+  }).catch(() => {})
+  trackEvent({ userId: session.user.id, event: 'onboarding.step_completed', properties: { step } })
+}
 
 // ─── Complete onboarding action ───────────────────────────────────────────────
 export async function completeOnboardingAction(
@@ -70,6 +82,8 @@ export async function completeOnboardingAction(
   })
 
   await completeOnboarding(userId)
+  await prisma.user.update({ where: { id: userId }, data: { onboardingStep: 8 } }).catch(() => {})
+  trackEvent({ userId, event: 'onboarding.completed' })
 
   redirect('/dashboard')
 }
