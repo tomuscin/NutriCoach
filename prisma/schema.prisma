@@ -1,5 +1,5 @@
-// NutriCoach — Prisma Schema v2
-// ETAP 2: Full Domain Model
+// NutriCoach — Prisma Schema v3
+// ETAP 6: Daily Experience + Productization
 // Database: MySQL / MariaDB (WEBD.pl — tomuscin_nutricoach)
 // ORM: Prisma v5
 //
@@ -279,6 +279,12 @@ model User {
   integrations        Integration[]
   syncLogs            SyncLog[]
   excelImportSessions ExcelImportSession[]
+  // ETAP 6
+  dailyReadiness      DailyReadiness[]
+  adherenceRecords    AdherenceRecord[]
+  dailyScores         DailyScore[]
+  aiScheduleConfig    AIScheduleConfig?
+  aiRollingSummaries  AIRollingSummary[]
 
   @@index([email])
   @@index([status])
@@ -788,6 +794,13 @@ model AIInsight {
   feedbackNote   String?
   feedbackAt     DateTime?
 
+  // Lifecycle (ETAP 6)
+  status        InsightStatus @default(GENERATED)
+  deliveredAt   DateTime?
+  viewedAt      DateTime?
+  interactedAt  DateTime?
+  archivedAt    DateTime?
+
   createdAt DateTime @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1043,4 +1056,187 @@ model ExcelImportError {
   @@map("excel_import_errors")
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: INSIGHT LIFECYCLE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum InsightStatus {
+  GENERATED   // created by AI engine
+  DELIVERED   // sent to user (notification triggered)
+  VIEWED      // user opened/read the insight
+  INTERACTED  // user took an action (feedback, click, etc.)
+  ARCHIVED    // no longer shown in active feed
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: DAILY READINESS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model DailyReadiness {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
+  // Composite readiness score
+  score      Float  // 0-100
+  level      String // 'low' | 'moderate' | 'high'
+  confidence Float  // 0-1
+
+  // Input signals (snapshot)
+  hrv               Float?
+  restingHR         Int?
+  sleepScore        Int?
+  sleepMinutes      Int?
+  atl               Float?  // Acute Training Load
+  ctl               Float?
+  tsb               Float?  // Training Stress Balance
+  calorieBalance7d  Float?  // avg 7d deficit/surplus
+  weightTrend7d     Float?  // delta kg/7d
+  adherenceScore7d  Float?  // 0-1, how well they followed recommendations
+
+  // Outputs
+  recommendedTrainingLoad Float   // recommended TSS for today
+  recommendedFocus        Json    // string[], e.g. ["recovery", "hydration"]
+  drivers                 Json    // string[], top factors
+  warnings                Json    // string[], notable flags
+
+  computedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_readiness")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: ADHERENCE TRACKING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AdherenceRecord {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
+  // Nutrition adherence
+  kcalTarget       Float?
+  kcalActual       Float?
+  kcalAdherence    Float?  // 0-1
+  proteinTarget    Float?
+  proteinActual    Float?
+  proteinAdherence Float?  // 0-1
+
+  // Training adherence
+  tssTarget       Float?
+  tssActual       Float?
+  workoutCompleted Boolean @default(false)
+  plannedWorkouts  Int     @default(0)
+  completedWorkouts Int    @default(0)
+
+  // Overall
+  dailyAdherenceScore Float?  // 0-1, weighted composite
+  streakDays          Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("adherence_records")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: DAILY SCORES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model DailyScore {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
+  // Dimension scores (0-100)
+  performanceScore  Int?  // training execution vs plan
+  recoveryScore     Int?  // sleep + HRV + readiness
+  consistencyScore  Int?  // adherence streak quality
+  nutritionScore    Int?  // macro compliance quality
+
+  // Composite
+  overallScore Int?
+
+  // Explainability
+  performanceDrivers  Json?  // string[]
+  recoveryDrivers     Json?  // string[]
+  consistencyDrivers  Json?  // string[]
+  nutritionDrivers    Json?  // string[]
+
+  scoreVersion String @default("1.0")
+  computedAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_scores")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: AI SCHEDULE CONFIG (per-user preferred generation times)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AIScheduleConfig {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  morningHour   Int @default(6)   // 0-23
+  morningMinute Int @default(30)  // 0-59
+  middayHour    Int @default(12)
+  middayMinute  Int @default(0)
+  eveningHour   Int @default(21)
+  eveningMinute Int @default(0)
+
+  morningEnabled Boolean @default(true)
+  middayEnabled  Boolean @default(true)
+  eveningEnabled Boolean @default(true)
+
+  timezone String @default("Europe/Warsaw")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_schedule_configs")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ETAP 6: AI ROLLING SUMMARY (daily memory — last 7 days compressed context)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AIRollingSummary {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date  // summary covers rolling 7d ending this date
+
+  // Compressed context (token-efficient summary of last N days)
+  summaryText String @db.Text  // 200-400 token condensed narrative
+  keyThemes   Json             // string[], recurring patterns
+  openLoops   Json             // string[], unresolved topics from previous insights
+  trendSignals Json            // { metric: string, direction: string, magnitude: string }[]
+  weekScore   Int?             // 0-100 composite week quality
+
+  tokenCount Int?
+
+  summaryVersion String @default("1.0")
+  generatedAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("ai_rolling_summaries")
+}
 

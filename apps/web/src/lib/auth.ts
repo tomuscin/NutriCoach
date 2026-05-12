@@ -194,6 +194,22 @@ export async function currentUser(): Promise<SessionUser | null> {
  * Use in Server Components for protected pages.
  */
 export async function requireAuth(): Promise<SessionUser> {
+  // DEV BYPASS — skip auth for local UI development
+  if (
+    process.env.DEV_BYPASS_AUTH === 'true' &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    return {
+      id: 'dev-user-bypass',
+      email: 'dev@nutricoach.local',
+      name: 'Dev User',
+      role: 'USER' as SessionUser['role'],
+      status: 'ACTIVE' as SessionUser['status'],
+      onboardingCompleted: true,
+      image: null,
+    }
+  }
+
   const user = await currentUser()
   if (!user) {
     const { redirect } = await import('next/navigation')

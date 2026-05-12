@@ -23,7 +23,29 @@
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/cron/**/*.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+
+  "crons": [
+    {
+      "path": "/api/cron/morning-insights",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/cron/midday-insights",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/evening-insights",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/cron/daily-scores",
+      "schedule": "0 22 * * *"
+    }
+  ]
 }
 

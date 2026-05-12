@@ -74,6 +74,19 @@ export default auth((request) => {
     return NextResponse.next()
   }
 
+  // DEV BYPASS — skip all auth checks locally when flag is set
+  if (
+    process.env.DEV_BYPASS_AUTH === 'true' &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    const requestId = crypto.randomUUID()
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set(REQUEST_ID_HEADER, requestId)
+    const response = NextResponse.next({ request: { headers: requestHeaders } })
+    response.headers.set(REQUEST_ID_HEADER, requestId)
+    return addSecurityHeaders(response)
+  }
+
   const isAuth = !!session?.user
   const isPublic = isPublicRoute(pathname)
 

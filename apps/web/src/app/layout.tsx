@@ -16,7 +16,13 @@ export const metadata: Metadata = {
     default: 'NutriCoach',
     template: '%s | NutriCoach',
   },
-  description: 'AI Personal Coach for nutrition, training and recovery',
+  description: 'AI Personal Coach dla sportowców — żywienie, trening, regeneracja',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'NutriCoach',
+  },
   openGraph: {
     type: 'website',
     locale: 'pl_PL',
@@ -26,6 +32,10 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  icons: {
+    apple: '/icons/apple-touch-icon.png',
+    icon: '/icons/icon-192.png',
+  },
 }
 
 export const viewport: Viewport = {
@@ -33,9 +43,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0f1e' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
 }
 
@@ -46,8 +57,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="NutriCoach" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').catch(function() {});
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
