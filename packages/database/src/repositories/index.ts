@@ -1,0 +1,10 @@
+export { BaseRepository } from './base.repository'
+export { UserRepository } from './user.repository'
+export { GoalRepository } from './goal.repository'
+export { DailyLogRepository } from './daily-log.repository'
+export { WorkoutRepository } from './workout.repository'
+export { RecoveryRepository } from './recovery.repository'
+export { AIInsightRepository } from './ai-insight.repository'
+export { IntegrationRepository } from './integration.repository'
+
+export type { DailyLogWithMeals } from './daily-log.repository'

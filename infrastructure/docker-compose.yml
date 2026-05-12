@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Local MySQL for development (mirrors WEBD.pl production environment)
+  mysql:
+    image: mysql:8.0
+    container_name: nutricoach-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: nutricoach
+      MYSQL_PASSWORD: nutricoach_dev
+      MYSQL_DATABASE: nutricoach
+      MYSQL_ROOT_PASSWORD: root_dev
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'nutricoach', '-pnutricoach_dev']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis — BullMQ queues + AI context cache (mirrors Upstash in production)
+  redis:
+    image: redis:7-alpine
+    container_name: nutricoach-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:

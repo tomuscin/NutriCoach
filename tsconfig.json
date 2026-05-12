@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nutricoach/ui": ["./packages/ui/src"],
+      "@nutricoach/types": ["./packages/types/src"],
+      "@nutricoach/config": ["./packages/config/src"],
+      "@nutricoach/utils": ["./packages/utils/src"],
+      "@nutricoach/ai": ["./packages/ai/src"],
+      "@nutricoach/nutrition-engine": ["./packages/nutrition-engine/src"],
+      "@nutricoach/training-engine": ["./packages/training-engine/src"],
+      "@nutricoach/recovery-engine": ["./packages/recovery-engine/src"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@nutricoach/workers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NutriCoach background workers — AI jobs, sync jobs, notifications",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@nutricoach/types": "*",
+    "@nutricoach/utils": "*",
+    "@prisma/client": "^5.0.0",
+    "openai": "^4.0.0",
+    "zod": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "prisma": "^5.0.0",
+    "rimraf": "^5",
+    "tsx": "^4.0.0",
+    "typescript": "^5"
+  }
+}

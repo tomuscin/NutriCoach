@@ -1,0 +1,26 @@
+{
+  "name": "@nutricoach/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NutriCoach BFF — Backend For Frontend (future extraction from Next.js API routes)",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@nutricoach/types": "*",
+    "@nutricoach/utils": "*",
+    "zod": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "eslint": "^8",
+    "rimraf": "^5",
+    "tsx": "^4.0.0",
+    "typescript": "^5"
+  }
+}

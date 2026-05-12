@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@nutricoach/ui": ["../../packages/ui/src"],
+      "@nutricoach/types": ["../../packages/types/src"],
+      "@nutricoach/config": ["../../packages/config/src"],
+      "@nutricoach/utils": ["../../packages/utils/src"],
+      "@nutricoach/ai": ["../../packages/ai/src"],
+      "@nutricoach/database": ["../../packages/database/src"],
+      "@nutricoach/queue": ["../../packages/queue/src"],
+      "@nutricoach/validators": ["../../packages/validators/src"],
+      "@nutricoach/events": ["../../packages/events/src"],
+      "@nutricoach/nutrition-engine": ["../../packages/nutrition-engine/src"],
+      "@nutricoach/training-engine": ["../../packages/training-engine/src"],
+      "@nutricoach/recovery-engine": ["../../packages/recovery-engine/src"]
+    },
+    "plugins": [{ "name": "next" }]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
