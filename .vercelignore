@@ -1,0 +1,25 @@
+# Vercel ignore — exclude from deployment upload
+# (node_modules is always excluded by Vercel automatically)
+
+# Dev data
+redukcjaod*.xlsx
+/tmp
+
+# Local scripts (not needed on Vercel)
+scripts/
+
+# Local dev tools
+.husky/
+
+# Test artifacts
+*.test.ts
+*.spec.ts
+__tests__/
+
+# Database local files
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/
+
+# Logs
+*.log
