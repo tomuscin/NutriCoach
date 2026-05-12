@@ -63,7 +63,7 @@ export type DashboardData = {
   calorieTarget: number | null
 
   // Last AI insight
-  lastInsight: { summary: string; type: string; createdAt: string } | null
+  lastInsight: { summary: string; type: string; createdAt: string; confidenceScore?: number | null } | null
 
   // Meta
   queriedAt: string
@@ -138,7 +138,7 @@ async function _getDashboardData(userId: string): Promise<DashboardData> {
     db.aIInsight.findFirst({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      select: { content: true, insightType: true, createdAt: true },
+      select: { content: true, insightType: true, createdAt: true, confidenceScore: true },
     }),
     getStreakCount(userId, today),
   ])
@@ -319,6 +319,7 @@ async function _getDashboardData(userId: string): Promise<DashboardData> {
           summary: latestInsight.content,
           type: latestInsight.insightType,
           createdAt: latestInsight.createdAt.toISOString(),
+          confidenceScore: latestInsight.confidenceScore ?? null,
         }
       : null,
     queriedAt: now.toISOString(),

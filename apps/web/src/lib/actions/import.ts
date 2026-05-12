@@ -1,9 +1,10 @@
 'use server'
 
-// Excel Import Server Actions — ETAP 4
+// Excel Import Server Actions — ETAP 4 + ETAP 5 cache invalidation
 // Handles: parse preview + commit to DB
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { CACHE_TAGS, IMPORT_INVALIDATES } from '@/lib/cache'
 import { requireOnboarded } from '@/lib/auth'
 import { parseExcelBuffer, type ParseResult } from '@/lib/imports/excel-parser'
 import { prisma } from '@/lib/db'
@@ -313,6 +314,9 @@ export async function commitExcelImport(
   })
 
   revalidatePath('/dashboard')
+  // Invalidate all data tags + AI insights (new data may change recommendations)
+  for (const tag of IMPORT_INVALIDATES) revalidateTag(tag)
+  revalidateTag(CACHE_TAGS.AI_INSIGHTS)
 
   return { ok: true, inserted: counts }
 }
