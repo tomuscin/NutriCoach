@@ -1,16 +1,26 @@
-// AI Insight Engine — ETAP 5
+// AI Insight Engine — ETAP 5 + ETAP 5.5
 // Deterministic coaching insight generation.
 // Three daily touchpoints: morning, midday, evening.
 //
+// ETAP 5.5 additions:
+//   - Quality Engine integration (pre-generation confidence breakdown)
+//   - canGenerate gate (block if data insufficient)
+//   - explainability stored in persistence
+//   - quality breakdown stored per insight
+//   - Sentry quality spans + low-confidence breadcrumbs
+//
 // Flow per insight:
-//   buildAIContext → serializeContext → buildPrompt → callAI → extractJSON
-//   → Zod parse → safety validate → persist → return
+//   buildAIContext → computeQuality → (canGenerate gate) →
+//   serializeContext → buildPrompt(+qualityReport) → callAI →
+//   extractJSON → Zod parse → safety validate → persistInsight(+quality) → return
 
 import 'server-only'
 import * as Sentry from '@sentry/nextjs'
 import { aiLogger, timer } from '@/lib/logger'
 import { buildAIContext, serializeContext } from './context-builder'
 import { buildPrompt } from './prompt-builder'
+import { computeQuality, QUALITY_THRESHOLDS } from './quality-engine'
+import type { AIConfidenceBreakdown } from './quality-engine'
 import { callAI, AI_MODELS, TOKEN_BUDGETS } from '@/lib/openai'
 import {
   parseMorningInsight,
@@ -31,8 +41,14 @@ import { persistInsight } from './persistence'
 // ─── Result types ─────────────────────────────────────────────────────────────
 
 export type InsightResult<T> =
-  | { ok: true; insight: T; persisted: boolean; latencyMs: number }
-  | { ok: false; error: string; fallback: true }
+  | {
+      ok: true
+      insight: T
+      persisted: boolean
+      latencyMs: number
+      quality: AIConfidenceBreakdown
+    }
+  | { ok: false; error: string; fallback: true; quality?: AIConfidenceBreakdown }
 
 // ─── Morning Insight ──────────────────────────────────────────────────────────
 
@@ -45,11 +61,42 @@ export async function generateMorningInsight(
 
   return Sentry.startSpan(
     { name: 'ai.morning_insight', op: 'ai', attributes: { userId } },
-    async () => {
+    async (span) => {
       try {
         const ctx = await buildAIContext(userId, date)
+        const qualityReport = computeQuality(ctx)
+        const { breakdown } = qualityReport
+
+        span?.setAttributes({
+          'ai.quality.overall': breakdown.overall,
+          'ai.quality.tier': qualityReport.tier,
+          'ai.quality.missing_signals': breakdown.missingSignals.length,
+        })
+
+        // Gate: insufficient data
+        if (!qualityReport.canGenerate) {
+          aiLogger.warn({ userId, quality: breakdown.overall, missing: breakdown.missingSignals }, 'ai.morning.insufficient_data')
+          Sentry.addBreadcrumb({
+            category: 'ai.quality',
+            message: 'Morning insight blocked — insufficient data',
+            level: 'warning',
+            data: { quality: breakdown.overall, missing: breakdown.missingSignals },
+          })
+          return { ok: false, error: 'Za mało danych do wygenerowania insightu. Uzupełnij dane snu, wagi i żywienia.', fallback: true, quality: breakdown }
+        }
+
+        // Low confidence warning breadcrumb
+        if (breakdown.overall < QUALITY_THRESHOLDS.MEDIUM) {
+          Sentry.addBreadcrumb({
+            category: 'ai.quality',
+            message: 'Low confidence morning insight',
+            level: 'info',
+            data: { quality: breakdown.overall, tier: qualityReport.tier },
+          })
+        }
+
         const serialized = serializeContext(ctx)
-        const { system, user, promptVersion } = buildPrompt('MORNING', ctx, serialized)
+        const { system, user, promptVersion } = buildPrompt('MORNING', ctx, serialized, qualityReport)
 
         const result = await callAI(system, user, {
           model: AI_MODELS.FAST,
@@ -65,7 +112,7 @@ export async function generateMorningInsight(
 
         if (!parsed) {
           aiLogger.warn({ userId, raw: result.content.slice(0, 200) }, 'ai.morning.parse_failed')
-          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true }
+          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true, quality: breakdown }
         }
 
         const safety = validateMorningOutput(parsed)
@@ -73,15 +120,9 @@ export async function generateMorningInsight(
 
         if (!safety.safe) {
           aiLogger.warn({ userId, violations: safety.violations }, 'ai.morning.safety_violation')
-          Sentry.addBreadcrumb({
-            category: 'ai.safety',
-            message: 'Morning insight safety clamped',
-            level: 'warning',
-            data: { violations: safety.violations },
-          })
+          Sentry.addBreadcrumb({ category: 'ai.safety', message: 'Morning insight safety clamped', level: 'warning', data: { violations: safety.violations } })
         }
 
-        // Persist to DB
         const persisted = await persistInsight({
           userId,
           insightType: 'MORNING_BRIEF',
@@ -95,14 +136,18 @@ export async function generateMorningInsight(
           totalTokens: result.usage.totalTokens,
           contextSnapshot: ctx,
           confidenceScore: finalInsight.confidence,
+          qualityBreakdown: breakdown,
+          primaryDrivers: finalInsight.explanations?.primaryDrivers ?? [],
+          supportingSignals: finalInsight.explanations?.supportingSignals ?? [],
+          explanationWarnings: finalInsight.explanations?.warnings ?? [],
         }).then(() => true).catch((err) => {
           aiLogger.error({ userId, error: String(err) }, 'ai.morning.persist_failed')
           return false
         })
 
-        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens, confidence: finalInsight.confidence })
+        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens, confidence: finalInsight.confidence, quality: breakdown.overall }) ?? result.latencyMs
 
-        return { ok: true, insight: finalInsight, persisted, latencyMs: latencyMs ?? result.latencyMs }
+        return { ok: true, insight: finalInsight, persisted, latencyMs, quality: breakdown }
 
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
@@ -125,11 +170,21 @@ export async function generateMiddayInsight(
 
   return Sentry.startSpan(
     { name: 'ai.midday_insight', op: 'ai', attributes: { userId } },
-    async () => {
+    async (span) => {
       try {
         const ctx = await buildAIContext(userId, date)
+        const qualityReport = computeQuality(ctx)
+        const { breakdown } = qualityReport
+
+        span?.setAttributes({ 'ai.quality.overall': breakdown.overall, 'ai.quality.tier': qualityReport.tier })
+
+        if (!qualityReport.canGenerate) {
+          aiLogger.warn({ userId, quality: breakdown.overall }, 'ai.midday.insufficient_data')
+          return { ok: false, error: 'Za mało danych do wygenerowania insightu.', fallback: true, quality: breakdown }
+        }
+
         const serialized = serializeContext(ctx)
-        const { system, user, promptVersion } = buildPrompt('MIDDAY', ctx, serialized)
+        const { system, user, promptVersion } = buildPrompt('MIDDAY', ctx, serialized, qualityReport)
 
         const result = await callAI(system, user, {
           model: AI_MODELS.FAST,
@@ -145,7 +200,7 @@ export async function generateMiddayInsight(
 
         if (!parsed) {
           aiLogger.warn({ userId, raw: result.content.slice(0, 200) }, 'ai.midday.parse_failed')
-          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true }
+          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true, quality: breakdown }
         }
 
         const safety = validateMiddayOutput(parsed)
@@ -166,11 +221,15 @@ export async function generateMiddayInsight(
           totalTokens: result.usage.totalTokens,
           contextSnapshot: ctx,
           confidenceScore: parsed.confidence,
+          qualityBreakdown: breakdown,
+          primaryDrivers: parsed.explanations?.primaryDrivers ?? [],
+          supportingSignals: parsed.explanations?.supportingSignals ?? [],
+          explanationWarnings: parsed.explanations?.warnings ?? [],
         }).then(() => true).catch(() => false)
 
-        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens })
+        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens }) ?? result.latencyMs
 
-        return { ok: true, insight: parsed, persisted, latencyMs: latencyMs ?? result.latencyMs }
+        return { ok: true, insight: parsed, persisted, latencyMs, quality: breakdown }
 
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
@@ -193,11 +252,21 @@ export async function generateEveningInsight(
 
   return Sentry.startSpan(
     { name: 'ai.evening_insight', op: 'ai', attributes: { userId } },
-    async () => {
+    async (span) => {
       try {
         const ctx = await buildAIContext(userId, date)
+        const qualityReport = computeQuality(ctx)
+        const { breakdown } = qualityReport
+
+        span?.setAttributes({ 'ai.quality.overall': breakdown.overall, 'ai.quality.tier': qualityReport.tier })
+
+        if (!qualityReport.canGenerate) {
+          aiLogger.warn({ userId, quality: breakdown.overall }, 'ai.evening.insufficient_data')
+          return { ok: false, error: 'Za mało danych do wygenerowania insightu.', fallback: true, quality: breakdown }
+        }
+
         const serialized = serializeContext(ctx)
-        const { system, user, promptVersion } = buildPrompt('EVENING', ctx, serialized)
+        const { system, user, promptVersion } = buildPrompt('EVENING', ctx, serialized, qualityReport)
 
         const result = await callAI(system, user, {
           model: AI_MODELS.FAST,
@@ -213,7 +282,7 @@ export async function generateEveningInsight(
 
         if (!parsed) {
           aiLogger.warn({ userId, raw: result.content.slice(0, 200) }, 'ai.evening.parse_failed')
-          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true }
+          return { ok: false, error: 'Nie udało się sparsować odpowiedzi AI', fallback: true, quality: breakdown }
         }
 
         const safety = validateEveningOutput(parsed)
@@ -234,11 +303,15 @@ export async function generateEveningInsight(
           totalTokens: result.usage.totalTokens,
           contextSnapshot: ctx,
           confidenceScore: parsed.confidence,
+          qualityBreakdown: breakdown,
+          primaryDrivers: parsed.explanations?.primaryDrivers ?? [],
+          supportingSignals: parsed.explanations?.supportingSignals ?? [],
+          explanationWarnings: parsed.explanations?.warnings ?? [],
         }).then(() => true).catch(() => false)
 
-        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens })
+        const latencyMs = t.end({ userId, tokens: result.usage.totalTokens }) ?? result.latencyMs
 
-        return { ok: true, insight: parsed, persisted, latencyMs: latencyMs ?? result.latencyMs }
+        return { ok: true, insight: parsed, persisted, latencyMs, quality: breakdown }
 
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)

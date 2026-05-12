@@ -76,6 +76,11 @@ const validMorning = {
   movement: 'Lekki trening 45-60 min cardio.',
   warnings: [],
   confidence: 0.82,
+  explanations: {
+    primaryDrivers: ['Osiągnąłeś cel kaloryczny poprzedniego dnia'],
+    supportingSignals: ['Białko 164g w normie'],
+    warnings: [],
+  },
 }
 
 test('accepts valid morning insight', () => {
@@ -123,6 +128,11 @@ const validMidday = {
   tip: 'Pamiętaj o odpowiednim nawodnieniu.',
   warnings: [],
   confidence: 0.75,
+  explanations: {
+    primaryDrivers: ['Tempo kaloryczne zgodne z planem'],
+    supportingSignals: ['1200 kcal z 2350 celu'],
+    warnings: [],
+  },
 }
 
 test('accepts valid midday insight', () => {
@@ -149,6 +159,11 @@ const validEvening = {
   tomorrowFocus: 'Zaplanuj trening interwałowy.',
   warnings: [],
   confidence: 0.88,
+  explanations: {
+    primaryDrivers: ['Cel kaloryczny osiągnięty', 'Cel białkowy osiągnięty'],
+    supportingSignals: ['Bilans -70 kcal — w normie'],
+    warnings: [],
+  },
 }
 
 test('accepts valid evening insight', () => {

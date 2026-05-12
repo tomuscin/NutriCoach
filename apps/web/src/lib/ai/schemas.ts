@@ -1,5 +1,6 @@
 // AI Output Schemas — Zod validation for all AI-generated content
 // ETAP 5 — Deterministic AI Coaching Runtime
+// ETAP 5.5 — Added explainability fields to all schemas
 //
 // All AI responses MUST conform to one of these schemas.
 // No free-form text output allowed — AI returns strict JSON.
@@ -21,6 +22,15 @@ export type ReadinessLevel = z.infer<typeof ReadinessLevelSchema>
 
 export const WarningSchema = z.string().min(1).max(300)
 
+// ─── Explainability (ETAP 5.5) ───────────────────────────────────────────────
+
+export const ExplanationsSchema = z.object({
+  primaryDrivers: z.array(z.string().min(5).max(150)).min(1).max(4),
+  supportingSignals: z.array(z.string().min(5).max(150)).max(4),
+  warnings: z.array(z.string().min(5).max(200)).max(3),
+})
+export type Explanations = z.infer<typeof ExplanationsSchema>
+
 // ─── Morning Insight ─────────────────────────────────────────────────────────
 
 export const MorningInsightSchema = z.object({
@@ -30,6 +40,7 @@ export const MorningInsightSchema = z.object({
   recommendation: MacroRecommendationSchema,
   movement: z.string().min(5).max(200),
   recoveryNote: z.string().min(5).max(200).optional(),
+  explanations: ExplanationsSchema,
   warnings: z.array(WarningSchema).max(3),
   confidence: z.number().min(0).max(1),
 })
@@ -43,6 +54,7 @@ export const MiddayInsightSchema = z.object({
   remainingProtein: z.number().int().min(0).max(350),
   pacingStatus: z.enum(['ahead', 'on_track', 'behind', 'no_data']),
   tip: z.string().min(10).max(200),
+  explanations: ExplanationsSchema,
   warnings: z.array(WarningSchema).max(2),
   confidence: z.number().min(0).max(1),
 })
@@ -58,6 +70,7 @@ export const EveningInsightSchema = z.object({
   consistency: z.enum(['excellent', 'good', 'fair', 'poor']),
   tomorrowFocus: z.string().min(10).max(200),
   recoveryRecommendation: z.string().min(5).max(200).optional(),
+  explanations: ExplanationsSchema,
   warnings: z.array(WarningSchema).max(3),
   confidence: z.number().min(0).max(1),
 })

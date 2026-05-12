@@ -274,6 +274,7 @@ model User {
   recoveryMetrics     RecoveryMetric[]
   trainingLoads       TrainingLoad[]
   aiInsights          AIInsight[]
+  aiPreferences       AIUserPreferences?
   notifications       Notification[]
   integrations        Integration[]
   syncLogs            SyncLog[]
@@ -767,13 +768,25 @@ model AIInsight {
   content        String  @db.Text // full generated insight
   recommendation String? @db.Text // actionable recommendation
 
-  // Quality
-  confidenceScore Float? // 0-1, computed heuristically
+  // Quality — multi-dimensional (ETAP 5.5)
+  confidenceScore          Float? // 0-1, overall
+  nutritionConfidence      Float? // 0-1, nutrition dimension
+  trainingConfidence       Float? // 0-1, training dimension
+  recoveryConfidence       Float? // 0-1, recovery dimension
+  dataCompleteness         Float? // 0-1, how complete context was
+  dataFreshness            Float? // 0-1, how fresh the data was
+  missingSignals           Json?  // string[], signals that were absent
+
+  // Explainability (ETAP 5.5)
+  primaryDrivers    Json? // string[], main factors driving recommendation
+  supportingSignals Json? // string[], supporting data points
+  explanationWarnings Json? // string[], important warnings for user
 
   // User interaction
   acknowledgedAt DateTime?
   feedback       InsightFeedback?
   feedbackNote   String?
+  feedbackAt     DateTime?
 
   createdAt DateTime @default(now())
 
@@ -783,8 +796,73 @@ model AIInsight {
   @@index([userId, createdAt])
   @@index([userId, insightType, deliveryMoment])
   @@index([userId, acknowledgedAt])
+  @@index([userId, feedback])
   @@index([dailyLogId])
   @@map("ai_insights")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AI USER PREFERENCES (ETAP 5.5)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AIUserPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Coaching personality
+  coachingTone        CoachingTone       @default(BALANCED)
+  verbosity           AIVerbosity        @default(STANDARD)
+  riskTolerance       AIRiskTolerance    @default(MODERATE)
+  recommendationStyle RecommendationStyle @default(DIRECTIVE)
+
+  // Focus priorities
+  preferredFocus   AIFocusArea @default(NUTRITION)
+  motivationStyle  String?     // free-form, e.g. "data-driven, no fluff"
+
+  // Display preferences
+  showConfidenceBar    Boolean @default(true)
+  showExplanations     Boolean @default(true)
+  showWarnings         Boolean @default(true)
+  lowConfidenceWarning Boolean @default(true)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_user_preferences")
+}
+
+enum CoachingTone {
+  STRICT       // direct, no-nonsense
+  BALANCED     // professional + warm
+  ENCOURAGING  // motivational, positive
+}
+
+enum AIVerbosity {
+  BRIEF    // max 1 sentence per section
+  STANDARD // normal
+  DETAILED // full context + rationale
+}
+
+enum AIRiskTolerance {
+  CONSERVATIVE // stay within very safe ranges
+  MODERATE     // standard evidence-based
+  AGGRESSIVE   // performance-optimized
+}
+
+enum RecommendationStyle {
+  DIRECTIVE   // tell me what to do
+  EDUCATIONAL // explain why
+  EXPLORATORY // give options
+}
+
+enum AIFocusArea {
+  NUTRITION
+  RECOVERY
+  PERFORMANCE
+  WEIGHT
+  BALANCED
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -1,30 +1,32 @@
+// AI Coach page — ETAP 5.5 Insight Timeline + Generation Hub
+// Server Component — data fetched server-side
+
 import type { Metadata } from 'next'
+import { requireOnboarded } from '@/lib/auth'
+import { getInsightHistory } from '@/lib/ai/persistence'
+import { InsightTimelineClient } from './InsightTimelineClient'
 
 export const metadata: Metadata = { title: 'AI Coach' }
+export const dynamic = 'force-dynamic'
 
-export default function AICoachPage() {
+export default async function AICoachPage() {
+  const user = await requireOnboarded()
+  const history = await getInsightHistory(user.id, { page: 1, pageSize: 15 })
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">AI Coach</h1>
-        <p className="text-muted-foreground">
-          Twój personalny asystent — analizy, rekomendacje, odpowiedzi
+        <p className="text-muted-foreground text-sm">
+          Spersonalizowane zalecenia oparte na Twoich danych.
         </p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Morning brief */}
-        <div className="lg:col-span-3 rounded-xl border border-border bg-card p-12 text-center text-muted-foreground">
-          MorningBrief / MidDayCheck / EveningReview — ETAP 7
-        </div>
-        {/* Chat interface */}
-        <div className="lg:col-span-2 rounded-xl border border-border bg-card p-12 text-center text-muted-foreground h-96">
-          AICoachChat — ETAP 7
-        </div>
-        {/* Insight sidebar */}
-        <div className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground h-96">
-          InsightHistory — ETAP 7
-        </div>
-      </div>
+
+      <InsightTimelineClient
+        initialItems={history.items}
+        totalPages={history.totalPages}
+        userId={user.id}
+      />
     </div>
   )
 }
