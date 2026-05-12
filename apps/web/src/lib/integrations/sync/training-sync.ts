@@ -1,6 +1,7 @@
 // Training Sync Engine — orchestrates a full sync cycle for a user
 // Handles: token refresh, workout sync, training load computation, event emission
 // Idempotent, retry-safe, serverless-safe.
+// ETAP 6.75: concurrency guard, metrics, journal events.
 
 import 'server-only'
 import { prisma as db } from '@/lib/db'
@@ -11,6 +12,8 @@ import { IntegrationError } from '../core/types'
 import { computeAndPersistAdherence } from '@/lib/adherence/adherence-engine'
 import { computeAndPersistReadiness } from '@/lib/readiness/readiness-engine'
 import { emitEvent } from '@/lib/events/bus'
+import { metrics } from '@/lib/runtime/metrics'
+import { journalEvent } from '@/lib/runtime/journal'
 import * as Sentry from '@sentry/nextjs'
 
 const TOKEN_REFRESH_BUFFER_MINUTES = 15
@@ -32,6 +35,22 @@ export async function runTrainingPeaksSync(userId: string): Promise<{
 
   if (!integration || integration.status === 'DISCONNECTED' || integration.status === 'REVOKED') {
     return { success: false, message: 'Integration not active', workoutsCreated: 0, workoutsUpdated: 0 }
+  }
+
+  // ── Concurrency guard (R-01) ──────────────────────────────────────────────
+  // If a sync is already RUNNING for this integration, skip to prevent double-processing.
+  const runningSync = await db.syncLog.findFirst({
+    where: {
+      integrationId: integration.id,
+      status: 'RUNNING',
+      // Only consider syncs started in the last 5 minutes (stale guard)
+      createdAt: { gte: new Date(Date.now() - 5 * 60 * 1000) },
+    },
+  })
+  if (runningSync) {
+    logger.warn({ userId, syncLogId: runningSync.id }, 'sync.skipped — already running')
+    await journalEvent({ eventType: 'sync.skipped', source: 'api.manual-sync', userId, payload: { reason: 'concurrent_sync', runningId: runningSync.id }, status: 'ok' })
+    return { success: false, message: 'Sync already running', workoutsCreated: 0, workoutsUpdated: 0 }
   }
 
   // Create sync log
@@ -128,6 +147,18 @@ export async function runTrainingPeaksSync(userId: string): Promise<{
     const elapsed = t.end()
     logger.info({ userId, result, elapsed }, 'TP sync complete')
 
+    metrics.increment('sync.success', { provider: 'TRAININGPEAKS' })
+    metrics.increment('sync.workouts_created', { provider: 'TRAININGPEAKS' }, result.recordsCreated)
+    metrics.increment('sync.workouts_updated', { provider: 'TRAININGPEAKS' }, result.recordsUpdated)
+    await journalEvent({
+      eventType: 'sync.completed',
+      source: 'cron.sync-workouts',
+      userId,
+      payload: { created: result.recordsCreated, updated: result.recordsUpdated },
+      processingMs: elapsed,
+      status: 'ok',
+    })
+
     return {
       success: true,
       message: `Synced ${result.recordsCreated} new, ${result.recordsUpdated} updated`,
@@ -157,6 +188,16 @@ export async function runTrainingPeaksSync(userId: string): Promise<{
         errorCount: { increment: 1 },
         lastErrorAt: new Date(),
       },
+    })
+
+    metrics.increment('sync.failed', { provider: 'TRAININGPEAKS' })
+    await journalEvent({
+      eventType: 'sync.failed',
+      source: 'cron.sync-workouts',
+      userId,
+      payload: { error: message },
+      status: 'failed',
+      errorMessage: message,
     })
 
     logger.error({ userId, err: message }, 'TP sync failed')

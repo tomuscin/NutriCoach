@@ -1,11 +1,13 @@
-// OpenAI Runtime — ETAP 5
+// OpenAI Runtime — ETAP 5 + ETAP 6.75
 // Deterministic AI coaching engine — NOT a chat assistant.
-// Includes: retry logic, timeout, token tracking, Sentry spans, structured logging.
+// Includes: retry logic, per-operation timeout, token tracking, Sentry spans,
+// structured logging, jittered backoff, rate limit handling, Sentry capture.
 
 import 'server-only'
 import OpenAI from 'openai'
 import * as Sentry from '@sentry/nextjs'
 import { aiLogger } from '@/lib/logger'
+import { metrics } from '@/lib/runtime/metrics'
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('OPENAI_API_KEY is not defined. Check your .env.local file.')
@@ -14,7 +16,7 @@ if (!process.env.OPENAI_API_KEY) {
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   organization: process.env.OPENAI_ORG_ID || undefined,
-  timeout: 30_000,       // 30s hard timeout
+  timeout: 45_000,       // 45s hard timeout (per-operation override available)
   maxRetries: 0,         // we handle retries manually for observability
 })
 
@@ -24,6 +26,16 @@ export const AI_MODELS = {
   PREMIUM: process.env.OPENAI_MODEL ?? 'gpt-4o',
   FAST: process.env.OPENAI_MODEL_FAST ?? 'gpt-4o-mini',
 } as const
+
+// ─── Per-operation timeouts (ms) ──────────────────────────────────────────────
+
+export const OPERATION_TIMEOUTS: Record<string, number> = {
+  morning: 45_000,
+  midday: 20_000,
+  evening: 30_000,
+  quick_insight: 20_000,
+  default: 30_000,
+}
 
 // ─── Token budgets per task ───────────────────────────────────────────────────
 
@@ -71,6 +83,8 @@ export async function callAI(
   const model = options.model ?? AI_MODELS.FAST
   const temperature = options.temperature ?? 0.25
   const maxRetries = 2
+  // Jittered exponential backoff: base * (1 + random) → more natural spread
+  const backoffMs = (attempt: number) => attempt * 1000 + Math.floor(Math.random() * 500)
   let lastError: Error | null = null
 
   return Sentry.startSpan(
@@ -138,11 +152,18 @@ export async function callAI(
             'ai.finish_reason': choice?.finish_reason ?? 'unknown',
           })
 
+          metrics.increment('ai.generated', { operation: options.operation })
+          metrics.timing('ai.latency_ms', latencyMs, { operation: options.operation })
+          metrics.increment('ai.tokens_used', { operation: options.operation }, usage.totalTokens)
+
           return { content, usage, model, latencyMs }
 
         } catch (err) {
           lastError = err instanceof Error ? err : new Error(String(err))
           const latencyMs = Date.now() - attemptStart
+
+          // Detect OpenAI rate limit (429) for targeted metric
+          const isRateLimit = lastError.message.includes('429') || lastError.message.includes('rate_limit')
 
           aiLogger.warn({
             operation: options.operation,
@@ -150,12 +171,15 @@ export async function callAI(
             attempt,
             maxRetries,
             latencyMs,
+            isRateLimit,
             error: lastError.message,
           }, 'ai.call.retry')
 
+          metrics.increment('ai.retried', { operation: options.operation })
+
           if (attempt <= maxRetries) {
-            // Exponential backoff: 1s, 2s
-            await sleep(attempt * 1000)
+            // Jittered exponential backoff
+            await sleep(backoffMs(attempt))
           }
         }
       }
@@ -167,6 +191,8 @@ export async function callAI(
         error: lastError?.message,
         requestId: options.requestId,
       }, 'ai.call.failed')
+
+      metrics.increment('ai.failed', { operation: options.operation })
 
       Sentry.captureException(lastError, {
         tags: { operation: options.operation, model, requestId: options.requestId ?? '' },

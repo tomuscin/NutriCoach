@@ -1269,8 +1269,9 @@ model WebhookEvent {
   athleteExternalId String?            // provider athlete ID
   payload          Json
   signature        String?             // raw signature header for audit
+  payloadHash      String?             // SHA-256 for deduplication
 
-  status       String   @default("pending") // pending | processed | failed
+  status       String   @default("pending") // pending | processed | failed | duplicate
   processedAt  DateTime?
   errorMessage String?
   retryCount   Int      @default(0)
@@ -1279,6 +1280,60 @@ model WebhookEvent {
 
   @@index([provider, status])
   @@index([athleteExternalId])
+  @@index([payloadHash])
   @@index([createdAt])
   @@map("webhook_events")
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EVENT JOURNAL — ETAP 6.75
+// Full audit log of every significant runtime event.
+// Enables replay, debugging, and observability.
+// ══════════════════════════════════════════════════════════════════════════════
+
+model EventJournal {
+  id              String  @id @default(cuid())
+  eventType       String  // e.g. 'sync.started', 'token.refreshed', 'insight.generated'
+  source          String  // e.g. 'cron.sync-workouts', 'webhook.trainingpeaks', 'api.manual-sync'
+  userId          String?
+  correlationId   String? // x-request-id / trace correlation
+  parentEventId   String? // for event chains
+  payloadHash     String? // SHA-256 of payload for dedup
+  payload         Json?   // event data (sanitized — no tokens)
+
+  status           String   @default("ok") // ok | failed | retried | replayed
+  processingMs     Int?     // wall-clock duration
+  retryCount       Int      @default(0)
+  errorMessage     String?  @db.Text
+  errorStack       String?  @db.Text
+
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([eventType])
+  @@index([userId])
+  @@index([correlationId])
+  @@index([source])
+  @@index([createdAt])
+  @@map("event_journal")
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RUNTIME METRICS — ETAP 6.75
+// Rolling counters for operational dashboards. Reset daily.
+// ══════════════════════════════════════════════════════════════════════════════
+
+model RuntimeMetric {
+  id        String   @id @default(cuid())
+  name      String   // e.g. 'sync.success', 'ai.malformed', 'webhook.duplicate'
+  value     Float    @default(0)
+  labels    Json?    // { provider, operation, userId? }
+  date      DateTime // UTC date (day granularity for rolling 7-day)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, date], name: "metric_name_date")
+  @@index([name])
+  @@index([date])
+  @@map("runtime_metrics")
 }

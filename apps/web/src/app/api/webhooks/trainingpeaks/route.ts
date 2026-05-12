@@ -1,6 +1,7 @@
 // POST /api/webhooks/trainingpeaks
 // Ingests inbound webhooks from TrainingPeaks.
 // Validates HMAC-SHA256 signature, stores event, triggers partial sync.
+// ETAP 6.75: idempotent deduplication + replay protection.
 
 import type { NextRequest } from 'next/server'
 import { prisma as db } from '@/lib/db'
@@ -8,6 +9,8 @@ import { trainingPeaksProvider } from '@/lib/integrations/providers/trainingpeak
 import { runTrainingPeaksSync } from '@/lib/integrations/sync/training-sync'
 import { emitEvent } from '@/lib/events/bus'
 import { logger } from '@/lib/logger'
+import { checkWebhookDuplicate, stampWebhookHash } from '@/lib/runtime/webhook-deduplication'
+import { metrics } from '@/lib/runtime/metrics'
 import * as Sentry from '@sentry/nextjs'
 
 export const dynamic = 'force-dynamic'
@@ -18,12 +21,17 @@ export async function POST(request: NextRequest) {
   const webhookSecret = process.env.TRAININGPEAKS_WEBHOOK_SECRET ?? ''
 
   // ── Signature validation ────────────────────────────────────────────────────
+  const isProduction = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production'
   if (webhookSecret && signature) {
     const valid = trainingPeaksProvider.validateWebhookSignature(rawBody, signature, webhookSecret)
     if (!valid) {
       logger.warn({ signature }, 'TP webhook: invalid signature')
+      Sentry.addBreadcrumb({ category: 'webhook', message: 'Invalid webhook signature', level: 'warning' })
       return Response.json({ error: 'Invalid signature' }, { status: 401 })
     }
+  } else if (isProduction && !webhookSecret) {
+    logger.warn('TP webhook: TRAININGPEAKS_WEBHOOK_SECRET not configured in production')
+    Sentry.captureMessage('Webhook received without signature validation — set TRAININGPEAKS_WEBHOOK_SECRET', 'warning')
   }
 
   let payload: Record<string, unknown>
@@ -36,6 +44,14 @@ export async function POST(request: NextRequest) {
   const athleteId = String(payload.athlete_id ?? payload.AthleteId ?? '')
   const eventType = String(payload.event ?? payload.EventType ?? 'unknown')
 
+  // ── Deduplication check ────────────────────────────────────────────────────
+  const dedup = await checkWebhookDuplicate('TRAININGPEAKS', eventType, athleteId, payload)
+  if (dedup.isDuplicate) {
+    Sentry.addBreadcrumb({ category: 'webhook', message: `Duplicate TP webhook blocked`, level: 'warning' })
+    metrics.increment('webhook.duplicate', { provider: 'TRAININGPEAKS' })
+    return Response.json({ ok: true, duplicate: true, originalId: dedup.originalId }, { status: 200 })
+  }
+
   // ── Persist webhook event ───────────────────────────────────────────────────
   const webhookEvent = await db.webhookEvent.create({
     data: {
@@ -47,8 +63,11 @@ export async function POST(request: NextRequest) {
       status: 'pending',
     },
   })
+  // Stamp hash after creation (non-blocking)
+  stampWebhookHash(webhookEvent.id, dedup.hash).catch(() => {/* non-fatal */})
 
   logger.info({ eventType, athleteId }, 'TP webhook received')
+  metrics.increment('webhook.received', { provider: 'TRAININGPEAKS' })
   await emitEvent('webhook_received', { provider: 'TRAININGPEAKS', eventType, athleteId })
 
   // ── Respond immediately (< 5s) then process async ──────────────────────────
@@ -64,12 +83,14 @@ export async function POST(request: NextRequest) {
     // Non-blocking partial sync
     runTrainingPeaksSync(integration.userId)
       .then(async () => {
+        metrics.increment('webhook.processed', { provider: 'TRAININGPEAKS' })
         await db.webhookEvent.update({
           where: { id: webhookEvent.id },
           data: { status: 'processed', processedAt: new Date() },
         })
       })
       .catch(async err => {
+        metrics.increment('webhook.failed', { provider: 'TRAININGPEAKS' })
         Sentry.captureException(err)
         await db.webhookEvent.update({
           where: { id: webhookEvent.id },
