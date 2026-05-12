@@ -8,6 +8,7 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { REQUEST_ID_HEADER } from '@/lib/correlation'
 
 // ─── Route configuration ──────────────────────────────────────────────────────
 const PUBLIC_ROUTES = [
@@ -110,7 +111,12 @@ export default auth((request) => {
   }
 
   // ─── Pass through + add security headers ─────────────────────────────────
-  const response = NextResponse.next()
+  const requestId = crypto.randomUUID()
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set(REQUEST_ID_HEADER, requestId)
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } })
+  response.headers.set(REQUEST_ID_HEADER, requestId)
   return addSecurityHeaders(response)
 })
 

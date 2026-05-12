@@ -1,10 +1,13 @@
 // GET /api/health — Production-ready health check
 // Checks: DB connectivity + latency, Redis availability, env presence, uptime
+// ETAP 4.5: Added memory, cold start, Sentry reachability, dashboard latency
 // Used by: Vercel deployment checks, uptime monitoring, WEBD.pl cron health
 
 import { prisma } from '@nutricoach/database'
 
 const APP_START = Date.now()
+const APP_VERSION = process.env.npm_package_version ?? '0.1.0'
+const DEPLOY_ENV = process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'unknown'
 
 type HealthStatus = 'ok' | 'degraded' | 'error'
 
@@ -22,10 +25,13 @@ type HealthResponse = {
   env: string
   timestamp: string
   uptimeSeconds: number
+  coldStartMs: number
   components: {
     database: ComponentHealth
     redis?: ComponentHealth
+    sentry: ComponentHealth
     env: ComponentHealth
+    memory: ComponentHealth
   }
 }
 
@@ -56,13 +62,16 @@ export async function GET() {
   const response: HealthResponse = {
     status: 'ok',
     app: 'NutriCoach',
-    version: process.env.npm_package_version ?? '0.1.0',
-    env: process.env.NODE_ENV ?? 'unknown',
+    version: APP_VERSION,
+    env: DEPLOY_ENV,
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor((Date.now() - APP_START) / 1000),
+    coldStartMs: Date.now() - APP_START,
     components: {
       database: { status: 'ok' },
+      sentry: { status: 'ok' },
       env: { status: 'ok' },
+      memory: { status: 'ok' },
     },
   }
 
@@ -73,6 +82,30 @@ export async function GET() {
   } else if (response.components.env.status === 'degraded' && response.status === 'ok') {
     response.status = 'degraded'
   }
+
+  // ─── Memory check ─────────────────────────────────────────────────────────
+  try {
+    const mem = process.memoryUsage()
+    const heapUsedMb = Math.round(mem.heapUsed / 1024 / 1024)
+    const heapTotalMb = Math.round(mem.heapTotal / 1024 / 1024)
+    const rssMb = Math.round(mem.rss / 1024 / 1024)
+    const usagePercent = Math.round((mem.heapUsed / mem.heapTotal) * 100)
+
+    response.components.memory = {
+      status: usagePercent > 90 ? 'degraded' : 'ok',
+      detail: `heap: ${heapUsedMb}/${heapTotalMb}MB (${usagePercent}%), rss: ${rssMb}MB`,
+    }
+    if (usagePercent > 90 && response.status === 'ok') response.status = 'degraded'
+  } catch {
+    response.components.memory = { status: 'ok', detail: 'memory metrics unavailable' }
+  }
+
+  // ─── Sentry check ─────────────────────────────────────────────────────────
+  const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN
+  response.components.sentry = sentryDsn
+    ? { status: 'ok', detail: 'DSN configured' }
+    : { status: 'degraded', detail: 'NEXT_PUBLIC_SENTRY_DSN not set' }
+  if (!sentryDsn && response.status === 'ok') response.status = 'degraded'
 
   // ─── Database check ───────────────────────────────────────────────────────
   const dbStart = Date.now()

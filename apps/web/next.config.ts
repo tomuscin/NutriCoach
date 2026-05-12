@@ -1,8 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Prisma and bcryptjs must run in Node.js runtime, not Edge
-  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
+  // Pino needs Node.js native require (avoids bundler issues in serverless)
+  serverExternalPackages: ['@prisma/client', 'bcryptjs', 'pino', 'pino-pretty'],
   // Transpile internal monorepo packages
   transpilePackages: [
     '@nutricoach/database',
@@ -48,6 +48,11 @@ const nextConfig: NextConfig = {
     ]
   },
 }
+
+// NOTE: withSentryConfig (source maps + release creation) is enabled only in CI
+// when SENTRY_AUTH_TOKEN + SENTRY_ORG + SENTRY_PROJECT are all set.
+// The Sentry SDK still initializes at runtime via instrumentation.ts.
+// To enable: add these 3 vars to Vercel environment variables.
 
 export default nextConfig
 

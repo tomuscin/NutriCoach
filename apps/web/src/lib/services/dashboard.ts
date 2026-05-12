@@ -1,8 +1,10 @@
-// Dashboard Aggregation Service — ETAP 4
+// Dashboard Aggregation Service — ETAP 4 + ETAP 4.5 Observability
 // Server-side only. Orchestrates all queries in parallel, applies analyzers,
 // returns a typed DashboardData object ready for rendering.
 
+import * as Sentry from '@sentry/nextjs'
 import { prisma as db } from '@/lib/db'
+import { dashboardLogger, timer } from '@/lib/logger'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -71,6 +73,14 @@ export type DashboardData = {
 // ─── Main aggregation ─────────────────────────────────────────────────────────
 
 export async function getDashboardData(userId: string): Promise<DashboardData> {
+  return Sentry.startSpan(
+    { name: 'getDashboardData', op: 'function', attributes: { userId } },
+    () => _getDashboardData(userId),
+  )
+}
+
+async function _getDashboardData(userId: string): Promise<DashboardData> {
+  const t = timer(dashboardLogger, 'getDashboardData')
   const start = Date.now()
   const timings: Record<string, number> = {}
 
@@ -277,9 +287,16 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
 
   timings.total = Date.now() - start
 
-  // Warn if slow
+  // Structured log — replaces console.warn
+  t.end({ userId, ...timings })
+
   if (timings.total > 800) {
-    console.warn(`[dashboard] Slow aggregation: ${timings.total}ms`, timings)
+    Sentry.addBreadcrumb({
+      category: 'dashboard',
+      message: `Slow aggregation: ${timings.total}ms`,
+      level: 'warning',
+      data: timings,
+    })
   }
 
   return {
