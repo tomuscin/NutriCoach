@@ -1240,3 +1240,45 @@ model AIRollingSummary {
   @@map("ai_rolling_summaries")
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// OAUTH STATE — CSRF protection for OAuth flows
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model OAuthState {
+  id        String              @id @default(cuid())
+  userId    String
+  state     String              @unique // random CSRF token
+  provider  IntegrationProvider
+  expiresAt DateTime            // 10 min TTL
+  createdAt DateTime            @default(now())
+
+  @@index([state])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("oauth_states")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WEBHOOK EVENTS — inbound webhooks from providers
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model WebhookEvent {
+  id               String              @id @default(cuid())
+  provider         IntegrationProvider
+  eventType        String              // e.g. 'workout_created', 'workout_updated'
+  athleteExternalId String?            // provider athlete ID
+  payload          Json
+  signature        String?             // raw signature header for audit
+
+  status       String   @default("pending") // pending | processed | failed
+  processedAt  DateTime?
+  errorMessage String?
+  retryCount   Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([provider, status])
+  @@index([athleteExternalId])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
