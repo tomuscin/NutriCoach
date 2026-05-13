@@ -59,7 +59,7 @@ export function LoginForm() {
           autoComplete="email"
           required
           disabled={isPending}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+          className="form-input"
           placeholder="twoj@email.pl"
         />
       </div>
@@ -84,7 +84,7 @@ export function LoginForm() {
           autoComplete="current-password"
           required
           disabled={isPending}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+          className="form-input"
           placeholder="••••••••"
         />
       </div>

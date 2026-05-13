@@ -1,7 +1,8 @@
-// EmptyState — reusable empty state component with icon, title, description, and optional CTA
-// Used across all sections: no workouts, no TP connection, no insights, no notifications, etc.
+// EmptyState — premium empty state with focal icon, clear hierarchy, animated entrance
+// Used across: no workouts, no connection, no insights, no notifications, etc.
 
 import { type LucideIcon, Inbox } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface EmptyStateProps {
   icon?: LucideIcon
@@ -18,6 +19,8 @@ interface EmptyStateProps {
     onClick?: () => void
   }
   className?: string
+  /** Visual size — default 'md' */
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export function EmptyState({
@@ -27,25 +30,55 @@ export function EmptyState({
   action,
   secondaryAction,
   className = '',
+  size = 'md',
 }: EmptyStateProps) {
+  const iconSizes = {
+    sm: { wrap: 'h-10 w-10', icon: 'h-5 w-5', py: 'py-8' },
+    md: { wrap: 'h-14 w-14', icon: 'h-7 w-7', py: 'py-12' },
+    lg: { wrap: 'h-18 w-18', icon: 'h-9 w-9', py: 'py-16' },
+  }
+  const s = iconSizes[size]
+
   return (
-    <div className={`flex flex-col items-center gap-4 py-12 text-center ${className}`}>
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
-        <Icon className="h-7 w-7 text-muted-foreground" />
+    <div className={cn('flex flex-col items-center gap-5 text-center animate-fade-in', s.py, className)}>
+      {/* Icon with layered gradient background — focal point */}
+      <div className="relative">
+        {/* Outer glow ring */}
+        <div
+          className={cn('absolute inset-0 rounded-2xl blur-xl opacity-20')}
+          style={{ background: 'hsl(var(--primary))' }}
+        />
+        {/* Icon container */}
+        <div
+          className={cn(
+            'relative flex items-center justify-center rounded-2xl',
+            s.wrap,
+          )}
+          style={{
+            background: 'linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.06))',
+            border: '1px solid hsl(var(--primary) / 0.2)',
+          }}
+        >
+          <Icon className={cn(s.icon, 'text-primary')} />
+        </div>
       </div>
-      <div className="space-y-1 max-w-xs">
+
+      {/* Text hierarchy */}
+      <div className="space-y-1.5 max-w-xs">
         <p className="font-semibold text-foreground">{title}</p>
         {description && (
           <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
         )}
       </div>
+
+      {/* Actions */}
       {(action || secondaryAction) && (
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 mt-1">
           {action && (
             action.href ? (
               <a
                 href={action.href}
-                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-105 transition-all hover:-translate-y-0.5 shadow-elevation-2"
               >
                 {action.label}
               </a>
@@ -53,7 +86,7 @@ export function EmptyState({
               <button
                 type="button"
                 onClick={action.onClick}
-                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-105 transition-all hover:-translate-y-0.5 shadow-elevation-2"
               >
                 {action.label}
               </button>
@@ -63,7 +96,7 @@ export function EmptyState({
             secondaryAction.href ? (
               <a
                 href={secondaryAction.href}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
                 {secondaryAction.label}
               </a>
@@ -71,7 +104,7 @@ export function EmptyState({
               <button
                 type="button"
                 onClick={secondaryAction.onClick}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
               >
                 {secondaryAction.label}
               </button>

@@ -1,11 +1,11 @@
 // DashboardSkeleton — loading states for all dashboard sections
-// Server component — no 'use client'
+// Uses .skeleton class from globals.css — directional shimmer, theme-aware.
 
 import { cn } from '@/lib/utils'
 
 function Skeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('animate-pulse rounded-md bg-muted', className)} />
+    <div className={cn('skeleton', className)} />
   )
 }
 

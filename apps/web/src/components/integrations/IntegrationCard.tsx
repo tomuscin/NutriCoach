@@ -89,7 +89,10 @@ export function IntegrationCard({
   }
 
   return (
-    <div className={`rounded-2xl border bg-card p-5 space-y-4 transition-colors ${hasError ? 'border-red-500/30' : stale ? 'border-amber-500/30' : 'border-border'}`}>
+    <div
+      className={`rounded-2xl border bg-card p-5 space-y-4 transition-all duration-200 hover:shadow-elevation-3 hover:-translate-y-0.5 ${hasError ? 'border-red-500/30' : stale ? 'border-amber-500/30' : 'border-border'}`}
+      style={{ boxShadow: 'var(--shadow-sm)' }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
