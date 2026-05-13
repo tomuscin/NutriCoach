@@ -100,7 +100,7 @@ async function processStravaEvent(event: StravaWebhookEvent, rawBody: string): P
       provider: 'STRAVA',
       eventType: `${event.object_type}.${event.aspect_type}`,
       athleteExternalId: String(event.owner_id),
-      payload: event as unknown as Record<string, unknown>,
+      payload: event as never,
       payloadHash,
       status: 'pending',
     },
