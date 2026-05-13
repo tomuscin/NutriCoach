@@ -5,7 +5,6 @@
 
 import { useState, useTransition } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { completeOnboardingAction, updateOnboardingStepAction } from '@/lib/actions/onboarding'
 import {
   CheckCircle2, Zap, Target, User, Link2, Bell, BrainCircuit, Trophy,
@@ -30,7 +29,6 @@ export function OnboardingWizard({ userId: _userId, initialStep = 0 }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<Record<string, string>>({})
   const { update } = useSession()
-  const router = useRouter()
 
   function setField(key: string, value: string) {
     setData(prev => ({ ...prev, [key]: value }))
@@ -55,9 +53,12 @@ export function OnboardingWizard({ userId: _userId, initialStep = 0 }: Props) {
         setError(result.error)
         return
       }
-      // Update JWT so middleware sees onboardingCompleted=true before navigation
+      // Update JWT so middleware sees onboardingCompleted=true before navigation.
+      // Then hard-navigate — window.location.href forces a full page load which
+      // re-reads the updated JWT cookie. router.push() navigates before the cookie
+      // is written, causing middleware to redirect back to /onboarding.
       await update({ onboardingCompleted: true })
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     })
   }
 
@@ -276,10 +277,10 @@ function TrainingPeaksStep() {
           </div>
         ))}
       </div>
-      <a href="/settings/integrations" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
-        <Link2 className="h-4 w-4"/>Połącz TrainingPeaks
-      </a>
-      <p className="text-center text-xs text-muted-foreground">Możesz to zrobić później w Ustawieniach</p>
+      <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center space-y-1">
+        <p className="text-sm font-medium text-foreground">Integracja dostępna po konfiguracji</p>
+        <p className="text-xs text-muted-foreground">Połącz TrainingPeaks w <strong>Ustawienia → Integracje</strong> po zakończeniu konfiguracji profilu.</p>
+      </div>
     </div>
   )
 }
