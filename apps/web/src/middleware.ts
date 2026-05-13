@@ -17,6 +17,8 @@ const PUBLIC_ROUTES = [
   '/auth/forgot-password',
   '/auth/reset-password',
   '/auth/verify-email',
+  '/auth/verify-email-pending',
+  '/auth/verify-success',
   '/auth/error',
 ]
 

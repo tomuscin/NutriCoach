@@ -47,7 +47,7 @@ export function VerifyEmailClient({ token, errorCode }: Props) {
       const data = await res.json()
       if (data.ok) {
         setMode('success')
-        setTimeout(() => { window.location.href = '/auth/login?verified=1' }, 2000)
+        setTimeout(() => { window.location.href = '/auth/verify-success' }, 1500)
       } else {
         const mapped = errorMessages[data.code ?? 'invalid'] ?? errorMessages.invalid
         setMode(mapped.mode)
