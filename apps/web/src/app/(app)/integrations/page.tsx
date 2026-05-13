@@ -33,6 +33,7 @@ export default async function IntegrationsPage({
 
   const byProvider = Object.fromEntries(integrations.map(i => [i.provider, i]))
   const tp = byProvider['TRAININGPEAKS'] ?? null
+  const strava = byProvider['STRAVA'] ?? null
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-6">
@@ -49,12 +50,19 @@ export default async function IntegrationsPage({
           TrainingPeaks połączony. Pierwsza synchronizacja w toku.
         </div>
       )}
+      {params.connected === 'strava' && (
+        <div className="rounded-lg bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-600">
+          Strava połączona. Pierwsza synchronizacja w toku.
+        </div>
+      )}
       {params.error && (
         <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-500">
           {params.error === 'access_denied' && 'Dostęp odrzucony przez TrainingPeaks.'}
           {params.error === 'invalid_state' && 'Nieprawidłowy token CSRF. Spróbuj ponownie.'}
           {params.error === 'auth_failed' && 'Błąd autoryzacji. Spróbuj ponownie.'}
-          {!['access_denied', 'invalid_state', 'auth_failed'].includes(params.error) && 'Wystąpił błąd. Spróbuj ponownie.'}
+          {params.error === 'strava_not_configured' && 'Strava nie jest skonfigurowana. Skontaktuj się z administratorem.'}
+          {params.error === 'strava_connect_failed' && 'Błąd połączenia ze Stravą. Spróbuj ponownie.'}
+          {!['access_denied', 'invalid_state', 'auth_failed', 'strava_not_configured', 'strava_connect_failed'].includes(params.error) && 'Wystąpił błąd. Spróbuj ponownie.'}
         </div>
       )}
 
@@ -75,6 +83,18 @@ export default async function IntegrationsPage({
           errorCount={tp?.errorCount ?? 0}
           connectHref="/api/integrations/trainingpeaks/connect"
         />
+        <IntegrationCard
+          provider="STRAVA"
+          displayName="Strava"
+          description="Aktywności endurance, tętno, moc, tempo"
+          logoEmoji="🚴"
+          status={(strava?.status as IntegrationStatus) ?? null}
+          lastSyncAt={strava?.lastSyncAt?.toISOString() ?? null}
+          nextSyncAt={strava?.nextSyncAt?.toISOString() ?? null}
+          errorMessage={strava?.errorMessage ?? null}
+          errorCount={strava?.errorCount ?? 0}
+          connectHref="/api/integrations/strava/connect"
+        />
       </section>
 
       {/* Coming soon */}
@@ -86,7 +106,6 @@ export default async function IntegrationsPage({
           {[
             { name: 'Garmin Connect', emoji: '⌚', desc: 'Sen, HRV, Body Battery, aktywności' },
             { name: 'Oura Ring', emoji: '💍', desc: 'Regeneracja, sen, HRV, temperatura' },
-            { name: 'Strava', emoji: '🚴', desc: 'Aktywności endurance' },
             { name: 'Apple Health', emoji: '🍎', desc: 'Kroki, sen, tętno' },
           ].map(item => (
             <div

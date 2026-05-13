@@ -144,6 +144,7 @@ enum WorkoutSource {
   MANUAL
   TRAININGPEAKS
   GARMIN
+  STRAVA
   EXCEL_IMPORT
 }
 
@@ -176,6 +177,7 @@ enum InsightFeedback {
 enum IntegrationProvider {
   TRAININGPEAKS
   GARMIN
+  STRAVA
   MANUAL
 }
 

@@ -39,6 +39,14 @@ export type ProductEvent =
   | 'tp.connect.failed'
   | 'tp.disconnect'
   | 'tp.sync.completed'
+  // Strava integration
+  | 'strava.connected'
+  | 'strava.disconnected'
+  | 'strava.webhook.received'
+  | 'strava.sync.started'
+  | 'strava.sync.completed'
+  | 'strava.sync.failed'
+  | 'strava.token.refreshed'
   // AI insights
   | 'insight.viewed'
   | 'insight.feedback.positive'
