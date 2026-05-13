@@ -48,7 +48,7 @@
     },
     {
       "path": "/api/cron/sync-tokens",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 * * * *"
     },
     {
       "path": "/api/cron/sync-workouts",
