@@ -54,8 +54,8 @@ const config: Config = {
           900: '#014737',
           950: '#022c22',
         },
-        // Warning / Nutrition alerts
-        warning: {
+        // Warning / Nutrition alerts (static palette for custom usage)
+        warningPalette: {
           50: '#fffbeb',
           100: '#fef3c7',
           200: '#fde68a',
@@ -96,6 +96,14 @@ const config: Config = {
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--warning))',
+          foreground: 'hsl(var(--warning-foreground))',
         },
       },
       fontFamily: {

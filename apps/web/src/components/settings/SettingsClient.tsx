@@ -1,10 +1,11 @@
 'use client'
 
 // SettingsClient — tabbed settings UI
-// Tabs: AI Coach | Powiadomienia | Prywatność | Konto
+// Tabs: Wygląd | AI Coach | Powiadomienia | Prywatność | Konto
 
 import { useState, useTransition } from 'react'
-import { BrainCircuit, Bell, ShieldCheck, User, Check, Loader2 } from 'lucide-react'
+import { BrainCircuit, Bell, ShieldCheck, User, Check, Loader2, Palette } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import type { UserPreferences } from '@prisma/client'
 
 interface Props {
@@ -17,26 +18,28 @@ interface Props {
 }
 
 const tabs = [
-  { id: 'ai', label: 'AI Coach', icon: BrainCircuit },
-  { id: 'notifications', label: 'Powiadomienia', icon: Bell },
-  { id: 'privacy', label: 'Prywatność', icon: ShieldCheck },
-  { id: 'account', label: 'Konto', icon: User },
+  { id: 'appearance', label: 'Wygląd',        icon: Palette     },
+  { id: 'ai',         label: 'AI Coach',       icon: BrainCircuit },
+  { id: 'notifications', label: 'Powiadomienia', icon: Bell     },
+  { id: 'privacy',    label: 'Prywatność',     icon: ShieldCheck },
+  { id: 'account',    label: 'Konto',          icon: User        },
 ] as const
 
 type Tab = typeof tabs[number]['id']
 
 export function SettingsClient({ userId, email, name, prefs }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>('ai')
+  const [activeTab, setActiveTab] = useState<Tab>('appearance')
   const [saved, setSaved] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
   // Local state mirrors prefs
-  const [aiTone, setAiTone] = useState(prefs?.aiCoachingTone ?? 'balanced')
+  const [darkMode, setDarkMode]     = useState<'system' | 'light' | 'dark'>((prefs?.darkMode ?? 'system') as 'system' | 'light' | 'dark')
+  const [aiTone, setAiTone]         = useState(prefs?.aiCoachingTone ?? 'balanced')
   const [aiVerbosity, setAiVerbosity] = useState(prefs?.aiVerbosity ?? 'normal')
   const [unitSystem, setUnitSystem] = useState(prefs?.unitSystem ?? 'metric')
   const [emailNotif, setEmailNotif] = useState(prefs?.emailNotifications ?? true)
-  const [pushNotif, setPushNotif] = useState(prefs?.pushNotifications ?? false)
+  const [pushNotif, setPushNotif]   = useState(prefs?.pushNotifications ?? false)
   const [insightSchedule, setInsightSchedule] = useState(prefs?.insightSchedule ?? 'auto')
   const [analyticsEnabled, setAnalyticsEnabled] = useState(prefs?.analyticsEnabled ?? true)
   const [crashReporting, setCrashReporting] = useState(prefs?.crashReporting ?? true)
@@ -49,6 +52,7 @@ export function SettingsClient({ userId, email, name, prefs }: Props) {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            darkMode,
             aiCoachingTone: aiTone,
             aiVerbosity,
             unitSystem,
@@ -85,6 +89,9 @@ export function SettingsClient({ userId, email, name, prefs }: Props) {
 
       {/* Tab content */}
       <div className="rounded-2xl border bg-card p-5 space-y-5">
+        {activeTab === 'appearance' && (
+          <AppearanceTab darkMode={darkMode} setDarkMode={setDarkMode}/>
+        )}
         {activeTab === 'ai' && (
           <AITab aiTone={aiTone} setAiTone={setAiTone} aiVerbosity={aiVerbosity} setAiVerbosity={setAiVerbosity} unitSystem={unitSystem} setUnitSystem={setUnitSystem}/>
         )}
@@ -109,6 +116,38 @@ export function SettingsClient({ userId, email, name, prefs }: Props) {
           {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
       )}
+    </div>
+  )
+}
+
+// ─── Appearance Tab ───────────────────────────────────────────────────────────
+
+function AppearanceTab({
+  darkMode,
+  setDarkMode,
+}: {
+  darkMode: 'system' | 'light' | 'dark'
+  setDarkMode: (v: 'system' | 'light' | 'dark') => void
+}) {
+  return (
+    <div className="space-y-6">
+      <SectionHeading>Wygląd</SectionHeading>
+
+      <FieldGroup
+        label="Motyw kolorystyczny"
+        hint="Wybierz tryb jasny, ciemny lub zgodny z ustawieniami systemu"
+      >
+        <ThemeToggle
+          onThemeChange={(t) => setDarkMode(t)}
+        />
+        <p className="text-xs text-muted-foreground mt-2">
+          {darkMode === 'system'
+            ? 'Motyw jest automatycznie dostosowywany do ustawień Twojego systemu.'
+            : darkMode === 'dark'
+            ? 'Ciemny motyw — premium, oszczędza baterię na OLED.'
+            : 'Jasny motyw — czyste, wysokie kontrasty.'}
+        </p>
+      </FieldGroup>
     </div>
   )
 }
@@ -278,7 +317,7 @@ function ToggleRow({ label, desc, enabled, onChange }: { label: string; desc?: s
       </div>
       <button type="button" role="switch" aria-checked={enabled} onClick={() => onChange(!enabled)}
         className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${enabled ? 'bg-primary' : 'bg-muted'}`}>
-        <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`}/>
+        <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`}/>
       </button>
     </div>
   )

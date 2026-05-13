@@ -2,50 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * NutriCoach Design Tokens
+ * Dark mode aesthetic: premium SaaS — blue-tinted surfaces, layered depth
+ * Inspired by: Linear, Raycast, Vercel, Notion dark mode
+ *
+ * Light: clean white / slate-50 surfaces with strong contrast
+ * Dark:  deep blue-grey (#0d1117 base) — NOT pure black, NOT gray
+ */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 191 85% 33%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 0 84% 60%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 191 85% 33%;
-    --radius: 0.625rem;
+    /* ── Surfaces ─────────────────────────── */
+    --background:       0 0% 98%;          /* #fafafa — off-white */
+    --foreground:       222 20% 10%;       /* near-black text */
+
+    --card:             0 0% 100%;         /* pure white cards */
+    --card-foreground:  222 20% 10%;
+
+    --popover:          0 0% 100%;
+    --popover-foreground: 222 20% 10%;
+
+    /* ── Brand & interactive ──────────────── */
+    --primary:          191 85% 33%;       /* NutriCoach teal */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary:        210 22% 94%;       /* light blue-grey */
+    --secondary-foreground: 222 20% 25%;
+
+    /* ── Neutral surfaces ─────────────────── */
+    --muted:            210 18% 94%;
+    --muted-foreground: 217 12% 50%;
+
+    /* ── Accent (coral CTA) ───────────────── */
+    --accent:           14 86% 56%;
+    --accent-foreground: 0 0% 100%;
+
+    /* ── Semantic states ──────────────────── */
+    --destructive:      0 84% 57%;
+    --destructive-foreground: 0 0% 100%;
+    --success:          160 65% 35%;
+    --success-foreground: 0 0% 100%;
+    --warning:          38 90% 48%;
+    --warning-foreground: 0 0% 100%;
+
+    /* ── Chrome ───────────────────────────── */
+    --border:           214 20% 88%;
+    --input:            214 20% 88%;
+    --ring:             191 85% 33%;
+
+    --radius:           0.625rem;
   }
 
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   * DARK MODE — premium blue-tinted surfaces
+   * Base:    hsl(222, 15%, 7%)   → #0d1117  (GitHub dark, Linear)
+   * Card:    hsl(222, 15%, 10%)  → slightly elevated
+   * Popover: hsl(222, 15%, 12%)  → floating surfaces
+   * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 191 85% 50%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 0 84% 60%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 20%;
-    --input: 217.2 32.6% 20%;
-    --ring: 191 85% 50%;
+    /* ── Surfaces ─────────────────────────── */
+    --background:       222 15% 7%;        /* #0d1117 — deep blue-grey */
+    --foreground:       213 22% 93%;       /* light grey-white text */
+
+    --card:             222 15% 10%;       /* elevated surface */
+    --card-foreground:  213 22% 93%;
+
+    --popover:          222 15% 12%;       /* floating modals, dropdowns */
+    --popover-foreground: 213 22% 93%;
+
+    /* ── Brand & interactive ──────────────── */
+    --primary:          191 85% 52%;       /* brighter teal on dark */
+    --primary-foreground: 222 15% 7%;      /* dark text on primary */
+
+    --secondary:        222 14% 17%;       /* slightly elevated muted */
+    --secondary-foreground: 213 22% 85%;
+
+    /* ── Neutral surfaces ─────────────────── */
+    --muted:            222 14% 14%;       /* subtle bg — cards, chips */
+    --muted-foreground: 216 12% 58%;       /* subdued text */
+
+    /* ── Accent ───────────────────────────── */
+    --accent:           14 86% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    /* ── Semantic states ──────────────────── */
+    --destructive:      0 65% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success:          160 55% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning:          38 85% 52%;
+    --warning-foreground: 0 0% 100%;
+
+    /* ── Chrome ───────────────────────────── */
+    --border:           222 14% 18%;       /* subtle blue-tinted border */
+    --input:            222 14% 16%;       /* input backgrounds */
+    --ring:             191 85% 52%;
   }
 }
 
@@ -53,17 +105,47 @@
   * {
     @apply border-border;
   }
+
+  html {
+    /* Smooth theme transition — applies to background/color/border simultaneously */
+    transition: background-color 0.2s ease, color 0.15s ease;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    /* Prevent overscroll background flash on mobile */
+    background-color: hsl(var(--background));
+    overscroll-behavior: none;
+  }
+
+  /* Ensure overscroll areas match background on iOS */
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  /* Focus ring discipline */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion — disable transitions */
+  @media (prefers-reduced-motion: reduce) {
+    html,
+    * {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 }
 
-/* Scrollbar styling */
+/* ── Custom scrollbar ─────────────────────────────────────────────────────── */
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted)) transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
@@ -73,7 +155,21 @@
     background: transparent;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--muted));
+    background-color: hsl(var(--border));
     border-radius: 2px;
   }
+
+  /* Safe-area aware bottom nav */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Elevation helpers for dark mode depth */
+  .surface-raised {
+    background-color: hsl(var(--card));
+  }
+  .surface-overlay {
+    background-color: hsl(var(--popover));
+  }
 }
+

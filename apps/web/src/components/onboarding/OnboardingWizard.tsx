@@ -311,7 +311,7 @@ function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean
   return (
     <button type="button" role="switch" aria-checked={enabled} onClick={() => onChange(!enabled)}
       className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${enabled ? 'bg-primary' : 'bg-muted'}`}>
-      <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`}/>
+      <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`}/>
     </button>
   )
 }

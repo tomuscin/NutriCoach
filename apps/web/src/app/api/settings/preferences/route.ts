@@ -17,6 +17,7 @@ const prefsSchema = z.object({
   insightSchedule: z.enum(['auto', 'morning', 'evening']).optional(),
   analyticsEnabled: z.boolean().optional(),
   crashReporting: z.boolean().optional(),
+  darkMode: z.enum(['system', 'light', 'dark']).optional(),
 })
 
 export async function PATCH(request: Request) {
