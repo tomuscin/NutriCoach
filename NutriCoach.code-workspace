@@ -1,0 +1,53 @@
+{
+  "folders": [
+    {
+      "name": "NutriCoach",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/.turbo": true,
+      "**/tsconfig.tsbuildinfo": true
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/.next/**": true,
+      "**/.turbo/**": true
+    },
+    "github.copilot.chat.codeGeneration.instructions": [
+      {
+        "text": "This is NutriCoach — an AI-native Conversational Intelligence Platform. Architecture: conversational-first, runtime-first, event-driven, memory-oriented, capability-based. Core package: packages/ncic (NCIC). Apps use packages, not direct service calls. All code is TypeScript. No shared secrets or infrastructure with Profitia or Private ecosystems."
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "prisma.prisma",
+      "bradlc.vscode-tailwindcss",
+      "ms-playwright.playwright"
+    ]
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "NutriCoach Web (dev)",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev", "--workspace=apps/web"],
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+}

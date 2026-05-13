@@ -6,7 +6,14 @@ This project is PRIVATE. It must NEVER share code, dependencies, API keys,
 database connections, GitHub accounts, or any resources with the Profitia workspace.
 
 ## Project Location
-/Users/tomaszuscinski/Projects/private/NutriCoach/
+/Users/tomaszuscinski/Documents/Visual Code Studio/NutriCoach/
+
+## Ecosystem
+NutriCoach is the THIRD autonomous development ecosystem, peer to Profitia and Private.
+NEVER share secrets, billing, infra, or database with other ecosystems.
+Architecture: conversational-first, runtime-first, event-driven, capability-based.
+NCIC (Nutrition Conversational Intelligence Core) = packages/ncic/ — canonical AI package.
+See docs/ARCHITECTURE.md, docs/ENVIRONMENT-ISOLATION.md, docs/NCIC-FOUNDATION.md.
 
 ## Active Stage
 ETAP 3 complete (Auth & Identity Foundation). Starting ETAP 4 (Dashboard & Data Display).

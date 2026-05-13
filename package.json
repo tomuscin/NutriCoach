@@ -5,7 +5,8 @@
   "description": "NutriCoach — AI Personal Coach for nutrition, training and recovery",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "services/*"
   ],
   "scripts": {
     "dev": "turbo run dev",
