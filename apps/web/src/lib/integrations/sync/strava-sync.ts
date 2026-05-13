@@ -7,7 +7,7 @@ import { prisma as db } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { safeDecryptToken } from '@/lib/security/token-encryption'
 import { stravaProvider, persistStravaTokens } from '../providers/strava/provider'
-import { IntegrationError } from '../core/types'
+import { IntegrationError, type OAuthTokens } from '../core/types'
 import { trackEvent } from '@/lib/analytics/events'
 import * as Sentry from '@sentry/nextjs'
 
@@ -53,7 +53,7 @@ export async function runStravaSync(userId: string): Promise<{
     },
   })
 
-  let tokens = {
+  let tokens: OAuthTokens = {
     accessToken: safeDecryptToken(integration.accessToken) ?? '',
     refreshToken: safeDecryptToken(integration.refreshToken) ?? '',
     expiresAt: integration.tokenExpiresAt ?? new Date(0),
