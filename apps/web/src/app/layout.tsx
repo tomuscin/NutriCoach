@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { ThemeColorSync } from '@/components/providers/ThemeColorSync'
 import { PWAProvider } from '@/components/providers/PWAProvider'
+import { NextAuthProvider } from '@/components/providers/NextAuthProvider'
 
 // Private app — all pages are dynamic (auth-protected, no static generation needed)
 export const dynamic = 'force-dynamic'
@@ -79,12 +80,14 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider>
-          <ThemeColorSync />
-          <PWAProvider>
-            {children}
-          </PWAProvider>
-        </ThemeProvider>
+        <NextAuthProvider>
+          <ThemeProvider>
+            <ThemeColorSync />
+            <PWAProvider>
+              {children}
+            </PWAProvider>
+          </ThemeProvider>
+        </NextAuthProvider>
       </body>
     </html>
   )
