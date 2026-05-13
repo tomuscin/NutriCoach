@@ -138,6 +138,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if ((session as { onboardingCompleted?: boolean }).onboardingCompleted !== undefined) {
           token.onboardingCompleted = (session as { onboardingCompleted?: boolean }).onboardingCompleted
         }
+        // Belt-and-suspenders: re-read from DB in case the session payload
+        // wasn't forwarded correctly by Auth.js v5 beta's update() mechanism.
+        // This runs in Node.js runtime (API route), never in edge middleware.
+        if (!token.onboardingCompleted && token.sub) {
+          try {
+            const profile = await prisma.userProfile.findUnique({
+              where: { userId: token.sub },
+              select: { onboardingCompletedAt: true },
+            })
+            if (profile?.onboardingCompletedAt) {
+              token.onboardingCompleted = true
+            }
+          } catch {
+            // Ignore DB errors — don't block auth
+          }
+        }
       }
 
       return token
