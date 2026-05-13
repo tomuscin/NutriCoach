@@ -97,23 +97,23 @@ async function consumeVerificationToken(
   }
 
   if (user.emailVerified) {
-    // Already verified — idempotent
-    await prisma.verificationToken.delete({
-      where: { identifier_token: { identifier: stored.identifier, token } },
-    }).catch(() => {})
+    // Already verified — idempotent, clean up token
+    await prisma.verificationToken.deleteMany({ where: { token } }).catch(() => {})
     return { ok: true }
   }
 
-  // Mark verified + delete token atomically
-  await prisma.$transaction([
-    prisma.user.update({
-      where: { id: user.id },
-      data: { emailVerified: new Date() },
-    }),
-    prisma.verificationToken.delete({
-      where: { identifier_token: { identifier: stored.identifier, token } },
-    }),
-  ])
+  // Mark user as verified first
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerified: new Date() },
+  })
+
+  // Clean up token (fire-and-forget — user is already verified above)
+  // Use deleteMany + token field (simpler than compound key, avoids $transaction issues
+  // on MySQL shared hosting where models have no @id field)
+  await prisma.verificationToken.deleteMany({
+    where: { token },
+  }).catch(() => {})
 
   trackEvent({ userId: user.id, event: 'email.verification.completed', ip })
   logger.info({ userId: user.id }, 'email.verification.completed')
