@@ -42,7 +42,7 @@ export const registerSchema = z.object({
     .string()
     .min(2, 'Imię musi mieć co najmniej 2 znaki')
     .max(50, 'Imię jest za długie')
-    .regex(/^[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\s-]+$/, 'Imię zawiera niedozwolone znaki'),
+    .regex(/^[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\s\-']+$/, 'Imię zawiera niedozwolone znaki'),
   acceptTerms: z.boolean().refine((v) => v === true, 'Musisz zaakceptować Regulamin'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Hasła muszą być identyczne',

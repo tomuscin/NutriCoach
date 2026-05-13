@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? ''
 
   if (ip) {
-    const rl = rateLimits.passwordReset(ip) // reuse the password-reset rate limit
+    const rl = rateLimits.emailVerify(ip) // dedicated email verify bucket
     if (!rl.allowed) {
       return NextResponse.json(
         { ok: false, error: 'Zbyt wiele prób. Spróbuj ponownie za godzinę.' },

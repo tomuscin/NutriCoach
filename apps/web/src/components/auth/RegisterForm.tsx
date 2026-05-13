@@ -60,25 +60,32 @@ export function RegisterForm() {
 
   function validate(): boolean {
     const errs: Record<string, string> = {}
-    if (!values.name.trim() || values.name.length < 2) errs.name = 'Imię musi mieć co najmniej 2 znaki'
+    const trimmedName = values.name.trim()
+    if (!trimmedName || trimmedName.length < 2) errs.name = 'Imię musi mieć co najmniej 2 znaki'
+    else if (trimmedName.length > 50) errs.name = 'Imię jest za długie (max 50 znaków)'
     if (!values.email.trim()) errs.email = 'Email jest wymagany'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errs.email = 'Nieprawidłowy format email'
+    else if (values.email.length > 254) errs.email = 'Email jest za długi'
     if (!values.password) errs.password = 'Hasło jest wymagane'
-    else if (!strength || strength.score < 5) errs.password = 'Hasło nie spełnia wymagań bezpieczeństwa'
+    else if (!strength || strength.score < 5) {
+      const missing = strength ? Object.entries(strength.checks).filter(([, ok]) => !ok).map(([k]) => checkLabels[k]).join(', ') : ''
+      errs.password = missing ? `Uzupełnij: ${missing}` : 'Hasło nie spełnia wymagań bezpieczeństwa'
+    }
     if (!values.confirmPassword) errs.confirmPassword = 'Potwierdzenie hasła jest wymagane'
     else if (values.password !== values.confirmPassword) errs.confirmPassword = 'Hasła muszą być identyczne'
-    if (!values.acceptTerms) errs.acceptTerms = 'Musisz zaakceptować Regulamin'
+    if (!values.acceptTerms) errs.acceptTerms = 'Musisz zaakceptować Regulamin i Politykę prywatności'
     setFieldErrors(errs)
     return Object.keys(errs).length === 0
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (isPending || success) return // double-submit guard
     setError(null)
     if (!validate()) return
     const fd = new FormData()
-    fd.append('name', values.name)
-    fd.append('email', values.email)
+    fd.append('name', values.name.trim())
+    fd.append('email', values.email.toLowerCase().trim())
     fd.append('password', values.password)
     fd.append('confirmPassword', values.confirmPassword)
     fd.append('acceptTerms', 'true')

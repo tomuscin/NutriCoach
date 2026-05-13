@@ -20,10 +20,10 @@ const STEPS = [
   { id: 'success', title: 'Gotowe!', icon: CheckCircle2 },
 ] as const
 
-interface Props { userId: string }
+interface Props { userId: string; initialStep?: number }
 
-export function OnboardingWizard({ userId: _userId }: Props) {
-  const [step, setStep] = useState(0)
+export function OnboardingWizard({ userId: _userId, initialStep = 0 }: Props) {
+  const [step, setStep] = useState(Math.min(Math.max(initialStep, 0), STEPS.length - 2))
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<Record<string, string>>({})

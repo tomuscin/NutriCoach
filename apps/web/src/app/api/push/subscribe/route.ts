@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { trackEvent } from '@/lib/analytics/events'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
     })
 
     logger.info({ userId }, 'push:subscribe')
+    trackEvent({ userId, event: 'push.subscribed', ip: req.headers.get('x-forwarded-for') ?? undefined })
     return NextResponse.json({ ok: true })
   } catch (err) {
     logger.error({ err, userId }, 'push:subscribe:error')

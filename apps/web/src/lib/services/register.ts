@@ -80,6 +80,7 @@ export async function registerUser(
 
   logAuthEvent({ event: 'register.success', userId: user.id, email: user.email, correlationId })
   await trackEvent({ userId: user.id, event: 'registration.completed', ip: opts.ip })
+  trackEvent({ event: 'email.verification.sent', userId: user.id, ip: opts.ip })
 
   // ─── Send verification email ──────────────────────────────────────────────
   await createAndSendVerificationToken(user.id, user.email, user.name ?? 'sportowcze')
@@ -96,11 +97,11 @@ export async function createAndSendVerificationToken(userId: string, email: stri
 
     // Clear any existing tokens first
     await prisma.verificationToken.deleteMany({
-      where: { identifier: email },
+      where: { identifier: `verify:${email}` },
     })
 
     await prisma.verificationToken.create({
-      data: { identifier: email, token, expires },
+      data: { identifier: `verify:${email}`, token, expires },
     })
 
     // Send email (fire-and-forget — non-critical path)

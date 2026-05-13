@@ -71,6 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: true,
             status: true,
             image: true,
+            emailVerified: true,
             profile: {
               select: { onboardingCompletedAt: true },
             },
@@ -95,7 +96,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null
         }
 
-        logAuthEvent({ event: 'login.success', userId: user.id, email })
+        // Warn if email not yet verified (soft gate — user can still log in but should verify)
+        if (!user.emailVerified) {
+          logAuthEvent({ event: 'login.success', userId: user.id, email, meta: { emailVerified: false } })
+        } else {
+          logAuthEvent({ event: 'login.success', userId: user.id, email })
+        }
 
         return {
           id: user.id,
@@ -104,6 +110,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role: user.role,
           status: user.status,
           image: user.image ?? null,
+          emailVerified: !!user.emailVerified,
           onboardingCompleted: !!user.profile?.onboardingCompletedAt,
         }
       },

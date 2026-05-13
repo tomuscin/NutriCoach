@@ -25,13 +25,26 @@ const PUBLIC_API_ROUTES = [
   '/api/health',
 ]
 
+// Static informational pages — always accessible, never auto-redirect authenticated users away
+const STATIC_ROUTES = [
+  '/terms',
+  '/privacy',
+  '/health-disclaimer',
+  '/offline',
+]
+
 const ONBOARDING_ROUTE = '/onboarding'
 
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.includes(pathname)) return true
   if (PUBLIC_API_ROUTES.some((p) => pathname.startsWith(p))) return true
+  if (STATIC_ROUTES.includes(pathname)) return true
   if (pathname === '/') return true
   return false
+}
+
+function isStaticRoute(pathname: string): boolean {
+  return STATIC_ROUTES.includes(pathname)
 }
 
 // ─── Security headers ─────────────────────────────────────────────────────────
@@ -102,7 +115,8 @@ export default auth((request) => {
   }
 
   // ─── Authenticated + public route → redirect to dashboard or onboarding ───
-  if (isAuth && isPublic && pathname !== '/') {
+  // Exception: static informational pages (/terms, /privacy, /health-disclaimer) are always passthrough
+  if (isAuth && isPublic && pathname !== '/' && !isStaticRoute(pathname)) {
     const user = session!.user as { onboardingCompleted?: boolean }
     const target = user.onboardingCompleted ? '/dashboard' : ONBOARDING_ROUTE
     return safeRedirect(request, target)

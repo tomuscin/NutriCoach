@@ -7,12 +7,27 @@ import { useTransition, useState } from 'react'
 import { loginAction } from '@/lib/actions/auth'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+// Validate that a redirect target is a relative path on the same origin (prevent open redirect)
+function safeCallbackUrl(raw: string | null): string {
+  if (!raw) return '/dashboard'
+  try {
+    const decoded = decodeURIComponent(raw)
+    // Must start with '/' and NOT be a protocol-relative URL like //evil.com
+    if (decoded.startsWith('/') && !decoded.startsWith('//') && !decoded.includes('://')) {
+      return decoded
+    }
+  } catch {
+    // decodeURIComponent failed — malformed, ignore
+  }
+  return '/dashboard'
+}
+
 export function LoginForm() {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams?.get('callbackUrl') ?? '/dashboard'
+  const callbackUrl = safeCallbackUrl(searchParams?.get('callbackUrl') ?? null)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -22,7 +37,7 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await loginAction(formData)
       if (result.ok) {
-        router.push(decodeURIComponent(callbackUrl))
+        router.push(callbackUrl)
         router.refresh()
       } else {
         setError(result.error)
