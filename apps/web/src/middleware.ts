@@ -129,7 +129,12 @@ export default auth((request) => {
     const user = session!.user as { onboardingCompleted?: boolean }
     const isOnboardingRoute = pathname.startsWith(ONBOARDING_ROUTE)
 
-    if (!user.onboardingCompleted && !isOnboardingRoute) {
+    // Override: completeOnboardingAction sets a short-lived cookie immediately
+    // after DB update. This lets middleware pass /dashboard before the JWT
+    // session cookie is refreshed by useSession().update() on the client.
+    const justCompletedOnboarding = request.cookies.get('__nc_onboarded')?.value === '1'
+
+    if (!user.onboardingCompleted && !isOnboardingRoute && !justCompletedOnboarding) {
       return safeRedirect(request, ONBOARDING_ROUTE)
     }
 

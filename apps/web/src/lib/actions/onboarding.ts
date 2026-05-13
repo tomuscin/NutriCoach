@@ -6,6 +6,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { completeOnboarding } from '@/lib/services/onboarding'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { trackEvent } from '@/lib/analytics/events'
 import type { AuthResult } from '@/types/auth'
 import type { Gender, ActivityLevel, SportType } from '@prisma/client'
@@ -84,6 +85,19 @@ export async function completeOnboardingAction(
   await completeOnboarding(userId)
   await prisma.user.update({ where: { id: userId }, data: { onboardingStep: 8 } }).catch(() => {})
   trackEvent({ userId, event: 'onboarding.completed' })
+
+  // Set a short-lived cookie so middleware allows /dashboard even before the
+  // JWT session cookie is updated by useSession().update() on the client.
+  // Without this, window.location.href='/dashboard' races against the JWT
+  // update and middleware sees onboardingCompleted=false, redirecting back.
+  const cookieStore = await cookies()
+  cookieStore.set('__nc_onboarded', '1', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 30, // 30 seconds — enough for navigation to complete
+    path: '/',
+  })
 
   // Do NOT call redirect() here — the JWT must be updated client-side first
   // (via useSession().update()) so the middleware allows /dashboard access.
