@@ -6,7 +6,7 @@
 
 import { useTransition, useState, useRef } from 'react'
 import { loginAction } from '@/lib/actions/auth'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Mail, RefreshCw, Inbox, Clock, CheckCircle2, AlertTriangle } from 'lucide-react'
 
 // Validate that a redirect target is a relative path on the same origin (prevent open redirect)
@@ -153,7 +153,6 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [blockedEmail, setBlockedEmail] = useState<string | null>(null)
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = safeCallbackUrl(searchParams?.get('callbackUrl') ?? null)
 
@@ -170,8 +169,12 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await loginAction(formData)
       if (result.ok) {
-        router.push(callbackUrl)
-        router.refresh()
+        // Hard navigation — guarantees new auth cookie is read on next page load.
+        // Avoids router.push + router.refresh race condition: router.refresh() fetches
+        // the current page (login) from the server; middleware now sees authenticated
+        // user on a public route and issues a redirect response — React receives
+        // conflicting router states and throws to global-error.tsx.
+        window.location.href = callbackUrl
       } else {
         setError(result.error)
         const code = result.code ?? null

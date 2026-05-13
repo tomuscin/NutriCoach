@@ -81,4 +81,7 @@ export const rateLimits = {
 
   emailVerify: (key: string) =>
     checkRateLimit({ key: `verify:${key}`, limit: 5, windowMs: 60 * 60 * 1000 }),
+
+  checkVerification: (key: string) =>
+    checkRateLimit({ key: `checkverify:${key}`, limit: 30, windowMs: 60 * 1000 }),
 }
