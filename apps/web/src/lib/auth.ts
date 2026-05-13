@@ -247,12 +247,21 @@ export async function requireAuth(): Promise<SessionUser> {
 /**
  * Require onboarding to be completed.
  * Redirects to /onboarding if not done.
+ * Exception: honours the __nc_onboarded short-lived cookie set by
+ * completeOnboardingAction, which allows the dashboard to load before
+ * the JWT session cookie is updated by useSession().update() on the client.
  */
 export async function requireOnboarded(): Promise<SessionUser> {
   const user = await requireAuth()
   if (!user.onboardingCompleted) {
-    const { redirect } = await import('next/navigation')
-    redirect('/onboarding')
+    // Check for the short-lived override cookie set by completeOnboardingAction
+    const { cookies } = await import('next/headers')
+    const cookieStore = await cookies()
+    const justCompleted = cookieStore.get('__nc_onboarded')?.value === '1'
+    if (!justCompleted) {
+      const { redirect } = await import('next/navigation')
+      redirect('/onboarding')
+    }
   }
   return user
 }
