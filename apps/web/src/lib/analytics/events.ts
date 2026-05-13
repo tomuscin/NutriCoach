@@ -11,7 +11,23 @@ export type ProductEvent =
   | 'registration.started'
   | 'registration.completed'
   | 'email.verification.sent'
+  | 'email.verification.resent'
+  | 'email.verification.clicked'
   | 'email.verification.completed'
+  | 'email.verification.failed'
+  | 'email.verification.expired'
+  // Password reset funnel
+  | 'password.reset.requested'
+  | 'password.reset.email.sent'
+  | 'password.reset.email.failed'
+  | 'password.reset.clicked'
+  | 'password.reset.completed'
+  | 'password.reset.failed'
+  | 'password.reset.token.expired'
+  | 'password.reset.token.invalid'
+  // Email deliverability
+  | 'email.sent'
+  | 'email.failed'
   // Onboarding funnel
   | 'onboarding.started'
   | 'onboarding.step_completed'

@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { rateLimits } from '@/lib/rate-limit'
 import { createAndSendVerificationToken } from '@/lib/services/register'
+import { trackEvent } from '@/lib/analytics/events'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
     }
 
     await createAndSendVerificationToken(user.id, email, user.name ?? 'Użytkowniku')
+    trackEvent({ event: 'email.verification.resent', userId: user.id, ip })
     logger.info({ userId: user.id }, 'verification.resent')
 
     return NextResponse.json({ ok: true })

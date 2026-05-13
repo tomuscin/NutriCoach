@@ -7,7 +7,9 @@ import { logAuthEvent, generateCorrelationId } from '@/lib/auth-logger'
 import { rateLimits } from '@/lib/rate-limit'
 import { forgotPasswordSchema, resetPasswordSchema } from '@/lib/validators/auth'
 import { sendPasswordResetEmail } from '@/lib/email/email-service'
+import { trackEvent } from '@/lib/analytics/events'
 import { logger } from '@/lib/logger'
+import * as Sentry from '@sentry/nextjs'
 import type { AuthResult } from '@/types/auth'
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000 // 1 hour
@@ -63,11 +65,22 @@ export async function requestPasswordReset(
   })
 
   logAuthEvent({ event: 'password_reset.requested', userId: user.id, email, correlationId })
+  trackEvent({ event: 'password.reset.requested', userId: user.id, ip: opts.ip })
 
   // Fire-and-forget — never block response on email delivery
-  sendPasswordResetEmail(email, user.name ?? 'Użytkowniku', token).catch(err => {
-    logger.error({ err, userId: user.id }, 'password_reset.email.failed')
-  })
+  sendPasswordResetEmail(email, user.name ?? 'Użytkowniku', token)
+    .then(result => {
+      if (result.ok) {
+        trackEvent({ event: 'password.reset.email.sent', userId: user.id })
+      } else {
+        trackEvent({ event: 'password.reset.email.failed', userId: user.id })
+        Sentry.captureMessage('password.reset.email.failed', { level: 'error', extra: { userId: user.id } })
+      }
+    })
+    .catch(err => {
+      logger.error({ err, userId: user.id }, 'password_reset.email.failed')
+      Sentry.captureException(err, { extra: { context: 'password_reset.email' } })
+    })
 
   return { ok: true }
 }
@@ -97,6 +110,8 @@ export async function resetPassword(
 
   if (!stored) {
     logAuthEvent({ event: 'password_reset.invalid_token', correlationId, meta: { reason: 'not_found_or_expired' } })
+    trackEvent({ event: 'password.reset.token.invalid', ip: opts.ip })
+    Sentry.captureMessage('password.reset.token.invalid', { level: 'warning' })
     return { ok: false, error: 'Token jest nieprawidłowy lub wygasł.' }
   }
 
@@ -124,6 +139,7 @@ export async function resetPassword(
   })
 
   logAuthEvent({ event: 'password_reset.completed', userId: user.id, email, correlationId })
+  trackEvent({ event: 'password.reset.completed', userId: user.id, ip: opts.ip })
 
   return { ok: true }
 }

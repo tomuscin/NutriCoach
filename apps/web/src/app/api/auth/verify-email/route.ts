@@ -5,16 +5,21 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { logger } from '@/lib/logger'
 import { trackEvent } from '@/lib/analytics/events'
+import * as Sentry from '@sentry/nextjs'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const token = searchParams.get('token')
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? undefined
 
   if (!token) {
     return NextResponse.redirect(new URL('/auth/verify-email?error=missing_token', request.url))
   }
+
+  // Track that user clicked the link (even before verification succeeds)
+  trackEvent({ event: 'email.verification.clicked', ip })
 
   try {
     const result = await consumeVerificationToken(token, request)
@@ -24,6 +29,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/auth/verify-email?error=${result.code}`, request.url))
   } catch (err) {
     logger.error({ err }, 'verify-email.get.error')
+    Sentry.captureException(err, { extra: { context: 'verify-email.GET' } })
     return NextResponse.redirect(new URL('/auth/verify-email?error=server_error', request.url))
   }
 }
@@ -41,9 +47,10 @@ export async function POST(request: Request) {
     if (result.ok) {
       return NextResponse.json({ ok: true })
     }
-    return NextResponse.json({ ok: false, error: result.error }, { status: 400 })
+    return NextResponse.json({ ok: false, error: result.error, code: result.code }, { status: 400 })
   } catch (err) {
     logger.error({ err }, 'verify-email.post.error')
+    Sentry.captureException(err, { extra: { context: 'verify-email.POST' } })
     return NextResponse.json({ ok: false, error: 'Błąd serwera' }, { status: 500 })
   }
 }
@@ -54,6 +61,8 @@ async function consumeVerificationToken(
   token: string,
   request: Request
 ): Promise<{ ok: true } | { ok: false; error: string; code: string }> {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? undefined
+
   const stored = await prisma.verificationToken.findFirst({
     where: {
       token,
@@ -62,6 +71,8 @@ async function consumeVerificationToken(
   })
 
   if (!stored) {
+    trackEvent({ event: 'email.verification.failed', ip })
+    Sentry.captureMessage('email.verification.failed: token not found', { level: 'warning', extra: { context: 'consumeVerificationToken' } })
     return { ok: false, error: 'Token jest nieprawidłowy lub nie istnieje.', code: 'invalid' }
   }
 
@@ -70,6 +81,7 @@ async function consumeVerificationToken(
     await prisma.verificationToken.delete({
       where: { identifier_token: { identifier: stored.identifier, token } },
     }).catch(() => {})
+    trackEvent({ event: 'email.verification.expired', ip })
     return { ok: false, error: 'Token wygasł. Poproś o nowy link weryfikacyjny.', code: 'expired' }
   }
 
@@ -103,7 +115,6 @@ async function consumeVerificationToken(
     }),
   ])
 
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? undefined
   trackEvent({ userId: user.id, event: 'email.verification.completed', ip })
   logger.info({ userId: user.id }, 'email.verification.completed')
 
