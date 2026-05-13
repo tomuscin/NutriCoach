@@ -1,0 +1,148 @@
+// This is your Prisma schema file for Leaxaro PMOS
+// Using Neon Postgres (PostgreSQL)
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum NodeStatus {
+  backlog
+  in_progress
+  blocked
+  done
+  archived
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+enum CanonicalAlignment {
+  high
+  medium
+  low
+}
+
+// ─── Core Models ─────────────────────────────────────────────────────────────
+
+model RoadmapNode {
+  id          String   @id @default(cuid())
+  parentId    String?  @map("parent_id")
+  title       String
+  description String?  @db.Text
+  status      NodeStatus @default(backlog)
+  priority    Priority   @default(medium)
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  parent    RoadmapNode?  @relation("NodeChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children  RoadmapNode[] @relation("NodeChildren")
+
+  tags      RoadmapNodeTag[]
+  logs      RoadmapNodeLog[]
+  decisions RoadmapNodeDecision[]
+
+  @@map("roadmap_nodes")
+}
+
+model ExecutionLog {
+  id                  String             @id @default(cuid())
+  title               String
+  summary             String?            @db.Text
+  prompt              String?            @db.Text
+  changedFiles        String[]           @map("changed_files")
+  architecturalImpact String?            @db.Text @map("architectural_impact")
+  blockers            String?            @db.Text
+  nextSteps           String?            @db.Text @map("next_steps")
+  canonicalAlignment  CanonicalAlignment @default(medium) @map("canonical_alignment")
+  createdAt           DateTime           @default(now()) @map("created_at")
+
+  tags  LogTag[]
+  nodes RoadmapNodeLog[]
+
+  @@map("execution_logs")
+}
+
+model Decision {
+  id              String   @id @default(cuid())
+  number          Int      @unique @default(autoincrement())
+  title           String
+  decision        String   @db.Text
+  reason          String?  @db.Text
+  impact          String?  @db.Text
+  affectedSystems String[] @map("affected_systems")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  nodes RoadmapNodeDecision[]
+
+  @@map("decisions")
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  roadmapNodes RoadmapNodeTag[]
+  logs         LogTag[]
+
+  @@map("tags")
+}
+
+// ─── Junction Tables ──────────────────────────────────────────────────────────
+
+model RoadmapNodeTag {
+  nodeId String @map("node_id")
+  tagId  String @map("tag_id")
+
+  node RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  tag  Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([nodeId, tagId])
+  @@map("roadmap_node_tags")
+}
+
+model LogTag {
+  logId String @map("log_id")
+  tagId String @map("tag_id")
+
+  log ExecutionLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  tag Tag          @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([logId, tagId])
+  @@map("log_tags")
+}
+
+model RoadmapNodeLog {
+  nodeId String @map("node_id")
+  logId  String @map("log_id")
+
+  node RoadmapNode  @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  log  ExecutionLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+
+  @@id([nodeId, logId])
+  @@map("roadmap_node_logs")
+}
+
+model RoadmapNodeDecision {
+  nodeId     String @map("node_id")
+  decisionId String @map("decision_id")
+
+  node     RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  decision Decision    @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+
+  @@id([nodeId, decisionId])
+  @@map("roadmap_node_decisions")
+}
