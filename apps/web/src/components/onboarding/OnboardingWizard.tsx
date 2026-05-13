@@ -4,6 +4,8 @@
 // Steps: Welcome → Goals → Profile data → TrainingPeaks → Notifications → AI prefs → Success
 
 import { useState, useTransition } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { completeOnboardingAction, updateOnboardingStepAction } from '@/lib/actions/onboarding'
 import {
   CheckCircle2, Zap, Target, User, Link2, Bell, BrainCircuit, Trophy,
@@ -27,6 +29,8 @@ export function OnboardingWizard({ userId: _userId, initialStep = 0 }: Props) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<Record<string, string>>({})
+  const { update } = useSession()
+  const router = useRouter()
 
   function setField(key: string, value: string) {
     setData(prev => ({ ...prev, [key]: value }))
@@ -46,7 +50,14 @@ export function OnboardingWizard({ userId: _userId, initialStep = 0 }: Props) {
     for (const [k, v] of Object.entries(data)) fd.append(k, v)
     startTransition(async () => {
       const result = await completeOnboardingAction(fd)
-      if (result && !result.ok) setError(result.error)
+      if (!result) return
+      if (!result.ok) {
+        setError(result.error)
+        return
+      }
+      // Update JWT so middleware sees onboardingCompleted=true before navigation
+      await update({ onboardingCompleted: true })
+      router.push('/dashboard')
     })
   }
 
@@ -265,7 +276,7 @@ function TrainingPeaksStep() {
           </div>
         ))}
       </div>
-      <a href="/settings/integrations" className="flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
+      <a href="/settings/integrations" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
         <Link2 className="h-4 w-4"/>Połącz TrainingPeaks
       </a>
       <p className="text-center text-xs text-muted-foreground">Możesz to zrobić później w Ustawieniach</p>

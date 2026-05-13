@@ -30,7 +30,7 @@ export async function completeOnboardingAction(
     redirect('/auth/login')
   }
 
-  const userId = session.user.id
+  const userId = session!.user.id
 
   // Parse form fields — only accept known enum values, fallback to defaults
   const rawSex = formData.get('sex') as string | null
@@ -85,5 +85,7 @@ export async function completeOnboardingAction(
   await prisma.user.update({ where: { id: userId }, data: { onboardingStep: 8 } }).catch(() => {})
   trackEvent({ userId, event: 'onboarding.completed' })
 
-  redirect('/dashboard')
+  // Do NOT call redirect() here — the JWT must be updated client-side first
+  // (via useSession().update()) so the middleware allows /dashboard access.
+  return { ok: true }
 }
