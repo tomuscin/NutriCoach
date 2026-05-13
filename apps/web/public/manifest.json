@@ -1,57 +1,85 @@
 {
+  "id": "/nutricoach/",
   "name": "NutriCoach",
   "short_name": "NutriCoach",
-  "description": "AI Personal Coach dla sportowców — żywienie, trening, regeneracja",
-  "start_url": "/dashboard",
-  "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
-  "orientation": "portrait-primary",
-  "scope": "/",
+  "description": "AI Personal Coach dla sportowców — żywienie, trening, regeneracja. Personalizowane briefy poranne, analiza diety i monitorowanie regeneracji.",
   "lang": "pl",
-  "categories": ["health", "fitness", "sports"],
+  "dir": "ltr",
+  "start_url": "/dashboard?utm_source=pwa&utm_medium=homescreen",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "orientation": "portrait-primary",
+  "categories": ["health", "fitness", "sports", "lifestyle", "productivity"],
+
   "icons": [
+    { "src": "/icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-128.png",  "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-256.png",  "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-384.png",  "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-mono-192.png",     "sizes": "192x192", "type": "image/png", "purpose": "monochrome" },
+    { "src": "/icons/apple-touch-icon.png",  "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+
+  "screenshots": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "/screenshots/dashboard-mobile.png",
+      "sizes": "390x844",
       "type": "image/png",
-      "purpose": "any maskable"
+      "form_factor": "narrow",
+      "label": "Dashboard — dzienny coaching feed"
     },
     {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
+      "src": "/screenshots/dashboard-desktop.png",
+      "sizes": "1280x720",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
+      "form_factor": "wide",
+      "label": "NutriCoach — widok na desktopie"
     }
   ],
-  "screenshots": [],
+
   "shortcuts": [
     {
       "name": "Dashboard",
       "short_name": "Home",
       "description": "Dzienny coaching feed",
-      "url": "/dashboard",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "url": "/dashboard?shortcut=1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Żywienie",
       "short_name": "Żyw.",
-      "description": "Logi żywieniowe",
-      "url": "/nutrition",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "description": "Logi żywieniowe i kalorie",
+      "url": "/nutrition?shortcut=1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "AI Coach",
       "short_name": "AI",
-      "description": "Insighty AI",
-      "url": "/ai-coach",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "description": "Insighty i rekomendacje AI",
+      "url": "/ai-coach?shortcut=1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Ustawienia",
+      "short_name": "Ustaw.",
+      "description": "Zarządzaj profilem i powiadomieniami",
+      "url": "/settings?shortcut=1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
-  ]
+  ],
+
+  "prefer_related_applications": false,
+
+  "edge_side_panel": {
+    "preferred_width": 480
+  }
 }

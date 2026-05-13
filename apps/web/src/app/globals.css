@@ -179,6 +179,37 @@
     border-radius: 4px;
   }
 
+  /* ── Mobile PWA: disable tap blue flash on touch ─────────────── */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Touch-action: faster tap response, disable zoom on double-tap ── */
+  a, button, [role="button"], [role="tab"], [role="link"],
+  label, select, summary {
+    touch-action: manipulation;
+  }
+
+  /* ── iOS input zoom prevention: font-size ≥ 16px prevents auto-zoom ── */
+  input, textarea, select {
+    font-size: max(16px, 1em);
+  }
+
+  /* ── Momentum scrolling on iOS scroll containers ─────────────── */
+  [data-scroll], .overflow-y-auto, .overflow-y-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Standalone mode: compensate for status bar height ──────── */
+  @media (display-mode: standalone) {
+    :root {
+      --safe-area-top:    env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-area-left:   env(safe-area-inset-left, 0px);
+      --safe-area-right:  env(safe-area-inset-right, 0px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html,
     * {
@@ -484,6 +515,38 @@
   .animate-slide-up { animation: slide-up 0.25s ease-out both; }
   .animate-scale-in { animation: scale-in 0.15s ease-out both; }
   .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+  /* ── Safe area utilities ─────────────────────────────────────── */
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+  .pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+
+  .mt-safe { margin-top: env(safe-area-inset-top, 0px); }
+  .mb-safe { margin-bottom: env(safe-area-inset-bottom, 0px); }
+
+  /* Combined padding with base value */
+  .pt-safe-4   { padding-top:    max(env(safe-area-inset-top, 0px), 1rem); }
+  .pb-safe-4   { padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem); }
+  .pt-safe-2   { padding-top:    max(env(safe-area-inset-top, 0px), 0.5rem); }
+  .pb-safe-2   { padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem); }
+
+  /* ── Scroll containment ──────────────────────────────────────── */
+  .scroll-contain-y { overscroll-behavior-y: contain; }
+  .scroll-contain   { overscroll-behavior: contain; }
+
+  /* ── Nav user-select none ────────────────────────────────────── */
+  .select-none-nav { user-select: none; -webkit-user-select: none; }
+
+  /* ── Standalone mode helpers ─────────────────────────────────── */
+  @media (display-mode: standalone) {
+    .standalone-pt { padding-top: env(safe-area-inset-top, 44px); }
+    .standalone-hidden { display: none; }
+    .standalone-visible { display: flex; }
+  }
+  @media not (display-mode: standalone) {
+    .standalone-visible { display: none; }
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════

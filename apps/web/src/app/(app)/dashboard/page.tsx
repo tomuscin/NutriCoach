@@ -16,10 +16,8 @@ import { TargetsRow } from '@/components/feed/MacroRing'
 import { MacroProgress } from '@/components/dashboard/MacroProgress'
 import { TrainingLoadCard } from '@/components/dashboard/TrainingLoadCard'
 import { RecoveryCard } from '@/components/dashboard/RecoveryCard'
-import {
-  WeightChartClient,
-  CalorieBarChartClient,
-} from '@/components/charts/DashboardCharts'
+import { WeightChartClient, CalorieBarChartClient } from '@/components/charts/DashboardCharts'
+import { PushPermissionCard } from '@/components/pwa/PushPermissionCard'
 import { Upload, BarChart2, AlertTriangle, CheckCircle2, Zap } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Dashboard' }
@@ -68,6 +66,9 @@ export default async function DashboardPage() {
           Import
         </Link>
       </div>
+
+      {/* PWA: soft push ask — shown day 2+, 14-day cooldown, client-rendered */}
+      <PushPermissionCard />
 
       {/* Morning Block */}
       <section className="space-y-3">

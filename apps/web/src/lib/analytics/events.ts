@@ -39,6 +39,18 @@ export type ProductEvent =
   | 'settings.viewed'
   | 'account.deleted'
   | 'data.exported'
+  // PWA lifecycle (client-side, tracked via /api/pwa/events — mirrored here for type completeness)
+  | 'pwa.install.shown'
+  | 'pwa.install.prompted'
+  | 'pwa.install.accepted'
+  | 'pwa.install.dismissed'
+  | 'pwa.standalone.launch'
+  | 'pwa.offline.used'
+  | 'pwa.sw.updated'
+  | 'pwa.push.prompted'
+  | 'pwa.push.accepted'
+  | 'pwa.push.dismissed'
+  | 'pwa.push.denied'
 
 interface TrackEventParams {
   userId?: string

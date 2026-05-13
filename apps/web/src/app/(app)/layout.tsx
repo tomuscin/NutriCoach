@@ -1,27 +1,15 @@
 // Protected app layout — requires authentication
 import { requireOnboarded } from '@/lib/auth'
 import { LogoutButton } from '@/components/auth/LogoutButton'
-import { NavLink } from '@/components/ui/NavLink'
-import {
-  LayoutDashboard, Salad, Dumbbell, Heart, BrainCircuit, BarChart2,
-  Link2, User, Bell, Settings, Home, Activity,
-} from 'lucide-react'
+import { PageTransition } from '@/components/providers/PageTransition'
+import { InstallPrompt } from '@/components/pwa/InstallPrompt'
+import { PWADiagnostics } from '@/components/pwa/PWADiagnostics'
+import { AppSidebarNav, AppBottomNav } from '@/components/layout/AppNav'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireOnboarded()
-
-  const navItems = [
-    { href: '/dashboard',    label: 'Dashboard',   icon: LayoutDashboard },
-    { href: '/nutrition',    label: 'Żywienie',     icon: Salad },
-    { href: '/workouts',     label: 'Treningi',     icon: Dumbbell },
-    { href: '/recovery',     label: 'Regeneracja',  icon: Heart },
-    { href: '/ai-coach',     label: 'AI Coach',     icon: BrainCircuit },
-    { href: '/analytics',    label: 'Analityka',    icon: BarChart2 },
-    { href: '/integrations', label: 'Integracje',   icon: Link2 },
-    { href: '/profile',      label: 'Profil',       icon: User },
-  ]
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,26 +27,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="font-semibold text-sm tracking-tight">NutriCoach</span>
           </div>
 
-          {/* Nav items */}
-          <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-thin">
-            {navItems.map((item) => (
-              <NavLink key={item.href} href={item.href} label={item.label} icon={item.icon} />
-            ))}
-          </nav>
+          <AppSidebarNav email={user.email ?? ''} />
 
-          {/* Bottom: settings + user */}
-          <div className="border-t border-border px-3 py-3 space-y-0.5">
-            <NavLink href="/notifications" label="Powiadomienia" icon={Bell} />
-            <NavLink href="/settings"      label="Ustawienia"    icon={Settings} />
-            <div className="px-3 pt-3 pb-1 border-t border-border mt-2">
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-            </div>
+          <div className="border-t border-border px-3 py-3">
             <LogoutButton className="w-full text-left flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors" />
           </div>
         </aside>
 
         {/* ── Main content ─────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto scroll-contain-y">
           {/* Mobile header — glass effect */}
           <header className="sticky top-0 z-40 border-b border-border glass md:hidden">
             <div className="h-14 flex items-center justify-between px-4">
@@ -67,46 +44,43 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 <span className="font-semibold text-sm">NutriCoach</span>
               </div>
               <div className="flex items-center gap-1">
-                <a href="/notifications" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <Bell className="h-5 w-5"/>
+                <a href="/notifications" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors" aria-label="Powiadomienia">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
                 </a>
-                <a href="/settings" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                  <Settings className="h-5 w-5"/>
+                <a href="/settings" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors" aria-label="Ustawienia">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
                 </a>
               </div>
             </div>
           </header>
 
           <div className="container mx-auto px-4 py-6 pb-24 max-w-7xl md:pb-6">
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </div>
         </main>
       </div>
 
       {/* ── Mobile bottom nav ──────────────────────────────────── */}
       <nav
-        className="fixed bottom-0 inset-x-0 z-50 border-t border-border glass-strong safe-area-inset-bottom md:hidden"
+        className="fixed bottom-0 inset-x-0 z-50 border-t border-border glass-strong safe-area-inset-bottom md:hidden select-none-nav"
         aria-label="Nawigacja dolna"
       >
-        <div className="h-16 flex items-center justify-around px-2">
-          {[
-            { href: '/dashboard', label: 'Home',    icon: Home,         exact: true },
-            { href: '/nutrition', label: 'Żyw.',     icon: Salad },
-            { href: '/workouts',  label: 'Trening',  icon: Activity },
-            { href: '/ai-coach',  label: 'AI',       icon: BrainCircuit },
-            { href: '/settings',  label: 'Ustaw.',   icon: Settings },
-          ].map((item) => (
-            <NavLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              exact={item.exact}
-              vertical
-            />
-          ))}
-        </div>
+        <AppBottomNav />
       </nav>
+
+      {/* ── PWA: floating install banner (above bottom nav, client-only) ─ */}
+      <InstallPrompt />
+
+      {/* ── PWA: dev-only diagnostics panel ─────────────────────── */}
+      {process.env.NODE_ENV === 'development' && <PWADiagnostics />}
     </div>
   )
 }

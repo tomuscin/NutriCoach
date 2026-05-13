@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { ThemeColorSync } from '@/components/providers/ThemeColorSync'
+import { PWAProvider } from '@/components/providers/PWAProvider'
 
 // Private app — all pages are dynamic (auth-protected, no static generation needed)
 export const dynamic = 'force-dynamic'
@@ -67,6 +68,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="NutriCoach" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        {/* iOS splash screens — generated from manifest colors */}
+        <link rel="apple-touch-startup-image" href="/icons/apple-touch-icon.png" />
+        <meta name="apple-touch-fullscreen" content="yes" />
         {/* No-flash script: reads localStorage before React hydrates, applies dark class immediately */}
         <script
           dangerouslySetInnerHTML={{
@@ -77,19 +81,10 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider>
           <ThemeColorSync />
-          {children}
+          <PWAProvider>
+            {children}
+          </PWAProvider>
         </ThemeProvider>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function() {});
-                });
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   )
