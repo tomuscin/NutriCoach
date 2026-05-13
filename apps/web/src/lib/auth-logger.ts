@@ -4,6 +4,7 @@
 type AuthEvent =
   | 'login.success'
   | 'login.failed'
+  | 'login.blocked_unverified'
   | 'login.rate_limited'
   | 'register.success'
   | 'register.failed'

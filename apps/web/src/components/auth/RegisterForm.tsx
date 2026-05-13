@@ -93,7 +93,8 @@ export function RegisterForm() {
       const result = await registerAction(fd)
       if (result.ok) {
         setSuccess(true)
-        setTimeout(() => router.push('/auth/login?registered=1'), 1800)
+        const emailEncoded = encodeURIComponent(values.email.toLowerCase().trim())
+        setTimeout(() => router.push(`/auth/verify-email-pending?email=${emailEncoded}`), 800)
       } else {
         setError(result.error)
         if (result.field) setFieldErrors(prev => ({ ...prev, [result.field!]: result.error }))
@@ -109,8 +110,7 @@ export function RegisterForm() {
         </div>
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Konto zostało utworzone!</h2>
-          <p className="text-sm text-muted-foreground">Sprawdź skrzynkę email, aby potwierdzić adres.</p>
-          <p className="text-xs text-muted-foreground mt-2">Za chwilę zostaniesz przekierowany/a do logowania…</p>
+          <p className="text-sm text-muted-foreground">Wysyłamy link aktywacyjny na Twój adres email…</p>
         </div>
       </div>
     )

@@ -67,6 +67,10 @@ export type ProductEvent =
   | 'pwa.push.accepted'
   | 'pwa.push.dismissed'
   | 'pwa.push.denied'
+  // Login funnel
+  | 'login.blocked.unverified'
+  | 'login.success'
+  | 'login.failed'
 
 interface TrackEventParams {
   userId?: string

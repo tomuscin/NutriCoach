@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   try {
     const result = await consumeVerificationToken(token, request)
     if (result.ok) {
-      return NextResponse.redirect(new URL('/auth/login?verified=1', request.url))
+      return NextResponse.redirect(new URL('/auth/verify-success', request.url))
     }
     return NextResponse.redirect(new URL(`/auth/verify-email?error=${result.code}`, request.url))
   } catch (err) {

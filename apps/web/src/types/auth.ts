@@ -51,7 +51,7 @@ export interface RegisterDTO {
 // ─── Auth result (used in server actions) ────────────────────────────────────
 export type AuthResult<T = undefined> =
   | { ok: true; data?: T }
-  | { ok: false; error: string; field?: string }
+  | { ok: false; error: string; field?: string; code?: string }
 
 // ─── Password reset DTO ───────────────────────────────────────────────────────
 export interface ForgotPasswordDTO {

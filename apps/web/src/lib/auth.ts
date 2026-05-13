@@ -96,12 +96,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null
         }
 
-        // Warn if email not yet verified (soft gate — user can still log in but should verify)
+        // Warn if email not yet verified — hard blocked in loginAction before reaching here
+        // This is a safety net in case authorize() is called directly
         if (!user.emailVerified) {
-          logAuthEvent({ event: 'login.success', userId: user.id, email, meta: { emailVerified: false } })
-        } else {
-          logAuthEvent({ event: 'login.success', userId: user.id, email })
+          logAuthEvent({ event: 'login.blocked_unverified', userId: user.id, email })
+          return null
         }
+
+        logAuthEvent({ event: 'login.success', userId: user.id, email })
 
         return {
           id: user.id,

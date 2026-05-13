@@ -8,6 +8,8 @@ import { registerUser } from '@/lib/services/register'
 import { requestPasswordReset, resetPassword } from '@/lib/services/password-reset'
 import { logAuthEvent } from '@/lib/auth-logger'
 import { rateLimits } from '@/lib/rate-limit'
+import { prisma } from '@/lib/db'
+import { trackEvent } from '@/lib/analytics/events'
 import { headers } from 'next/headers'
 import type { AuthResult } from '@/types/auth'
 
@@ -41,6 +43,23 @@ export async function loginAction(
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+
+  // Hard block: unverified email must verify before logging in
+  if (email) {
+    const userCheck = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+      select: { id: true, emailVerified: true },
+    })
+    if (userCheck && !userCheck.emailVerified) {
+      logAuthEvent({ event: 'login.blocked_unverified', email, ip })
+      trackEvent({ event: 'login.blocked.unverified', ip })
+      return {
+        ok: false,
+        error: 'Najpierw potwierdź adres email. Sprawdź skrzynkę i kliknij link aktywacyjny.',
+        code: 'email_not_verified',
+      }
+    }
+  }
 
   try {
     await signIn('credentials', {
