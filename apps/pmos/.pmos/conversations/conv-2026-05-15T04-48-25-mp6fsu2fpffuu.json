@@ -1,0 +1,34 @@
+{
+  "conversation_id": "conv-2026-05-15T04-48-25-mp6fsu2fpffuu",
+  "timestamp": "2026-05-15T04:48:25.143Z",
+  "project": "leaxaro",
+  "task_id": "ETAP-06-00-HISTORICAL-CONTINUITY-LAYER",
+  "etap": "ETAP-06",
+  "subetap": "06-00",
+  "domains": [
+    "pmos",
+    "timeline",
+    "decisions",
+    "warnings"
+  ],
+  "conversation_type": "continuity",
+  "importance_level": "medium",
+  "user_prompt": "memory",
+  "llm_response": "ETAP-06-00: Unified Timeline z 5 typami (prompt/log/decision/warning/conversation) i filter barem. Detail pages dla /decisions/[id] i /warnings/[id] z sekcja Reasoning Lineage (linked conversations). Cross-entity linki naprawione. Lineage entry points w DecisionList i WarningCard. Fix sync-pmos-conversations.ts: zastapienie zduplikowanych readline interfejsow pojedyncza funkcja collectMultiline(rl) z event listener zamiast nowego interfejsu.",
+  "summary": "ETAP-06-00 Historical Continuity Layer: unified timeline, decision/warning detail pages z Reasoning Lineage, fix sync script readline bug",
+  "linked_entities": {
+    "decisions": [],
+    "warnings": [],
+    "roadmapNodes": [],
+    "executions": [],
+    "principles": [],
+    "prompts": []
+  },
+  "chronology_order": 1,
+  "tags": [
+    "memory",
+    "sync",
+    "reasoning-lineage",
+    "unified-timeline"
+  ]
+}

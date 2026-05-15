@@ -199,6 +199,28 @@ function question(rl: ReturnType<typeof createInterface>, prompt: string): Promi
   return new Promise((resolve) => rl.question(prompt, resolve))
 }
 
+function collectMultiline(rl: ReturnType<typeof createInterface>): Promise<string> {
+  return new Promise((resolve) => {
+    const lines: string[] = []
+    let blanks = 0
+    const onLine = (line: string) => {
+      if (line === '' && lines.length > 0) {
+        blanks++
+        if (blanks >= 2) {
+          rl.removeListener('line', onLine)
+          resolve(lines.join('\n'))
+        } else {
+          lines.push(line)
+        }
+      } else {
+        blanks = 0
+        lines.push(line)
+      }
+    }
+    rl.on('line', onLine)
+  })
+}
+
 async function collectArtifact(): Promise<ConversationArtifact> {
   const rl = createInterface({ input: process.stdin, output: process.stdout })
 
@@ -231,49 +253,10 @@ async function collectArtifact(): Promise<ConversationArtifact> {
   const promptsRaw = await question(rl, '  Prompts [titles or ids]: ')
 
   console.log('\nUser prompt (paste, then press Enter twice when done):')
-  const userPromptLines: string[] = []
-  let emptyCount = 0
-  rl.on('line', () => {}) // ensure line events fire
-  const userPrompt = await new Promise<string>((resolve) => {
-    const tempRl = createInterface({ input: process.stdin, output: process.stdout })
-    const lines: string[] = []
-    let blanks = 0
-    tempRl.on('line', (line) => {
-      if (line === '' && lines.length > 0) {
-        blanks++
-        if (blanks >= 2) {
-          tempRl.close()
-          resolve(lines.join('\n'))
-        } else {
-          lines.push(line)
-        }
-      } else {
-        blanks = 0
-        lines.push(line)
-      }
-    })
-  })
+  const userPrompt = await collectMultiline(rl)
 
   console.log('\nLLM response / summary of what was built (paste, then press Enter twice when done):')
-  const llmResponse = await new Promise<string>((resolve) => {
-    const tempRl = createInterface({ input: process.stdin, output: process.stdout })
-    const lines: string[] = []
-    let blanks = 0
-    tempRl.on('line', (line) => {
-      if (line === '' && lines.length > 0) {
-        blanks++
-        if (blanks >= 2) {
-          tempRl.close()
-          resolve(lines.join('\n'))
-        } else {
-          lines.push(line)
-        }
-      } else {
-        blanks = 0
-        lines.push(line)
-      }
-    })
-  })
+  const llmResponse = await collectMultiline(rl)
 
   const summary = await question(rl, '\nOne-line summary (high-signal retrieval): ')
   rl.close()
@@ -290,7 +273,7 @@ async function collectArtifact(): Promise<ConversationArtifact> {
     domains: parseList(domainsRaw),
     conversation_type: validateConversationType(typeRaw || 'implementation'),
     importance_level: validateImportanceLevel(importanceRaw || 'medium'),
-    user_prompt: (userPromptLines.join('\n') || userPrompt).trim(),
+    user_prompt: userPrompt.trim(),
     llm_response: llmResponse.trim(),
     summary: summary.trim(),
     linked_entities: {
