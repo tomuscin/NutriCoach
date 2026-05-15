@@ -79,6 +79,12 @@ export function WarningCard({ warning }: { warning: Warning }) {
           <span className="text-text-tertiary text-2xs">
             {new Date(warning.createdAt).toLocaleDateString('pl-PL')}
           </span>
+          <Link
+            href={`/warnings/${warning.id}`}
+            className="text-2xs text-text-tertiary hover:text-accent transition-colors"
+          >
+            lineage
+          </Link>
           <form action={resolveArchitectureWarning.bind(null, warning.id)}>
             <button
               type="submit"

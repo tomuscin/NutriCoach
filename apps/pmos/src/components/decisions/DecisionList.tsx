@@ -120,6 +120,18 @@ function DecisionCard({ decision }: { decision: Decision }) {
             </Section>
           )}
 
+          <div className="pt-2 flex items-center gap-4">
+            <Link
+              href={`/decisions/${decision.id}`}
+              className="text-2xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
+            >
+              View reasoning lineage
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M3 2l4 3-4 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </div>
+
           {decision.conversations && decision.conversations.length > 0 && (
             <Section label="Related Conversations">
               <div className="space-y-1.5">

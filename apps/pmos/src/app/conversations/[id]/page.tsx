@@ -117,7 +117,7 @@ export default async function ConversationPage({ params }: { params: { id: strin
             <p className="text-xs font-medium uppercase tracking-widest text-text-muted mb-3">Linked Entities</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {artifact.linkedDecisions.map(({ decision }) => (
-                <Link key={decision.id} href={`/decisions`} className="flex items-start gap-2 p-3 rounded-lg bg-bg-surface border border-bg-border hover:border-bg-hover transition-colors group">
+                <Link key={decision.id} href={`/decisions/${decision.id}`} className="flex items-start gap-2 p-3 rounded-lg bg-bg-surface border border-bg-border hover:border-bg-hover transition-colors group">
                   <span className="w-1.5 h-1.5 rounded-full bg-purple-500/70 mt-1.5 flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs text-text-muted">ADR-{String(decision.number).padStart(3, '0')}</p>
@@ -126,7 +126,7 @@ export default async function ConversationPage({ params }: { params: { id: strin
                 </Link>
               ))}
               {artifact.linkedWarnings.map(({ warning }) => (
-                <Link key={warning.id} href={`/warnings`} className="flex items-start gap-2 p-3 rounded-lg bg-bg-surface border border-bg-border hover:border-bg-hover transition-colors group">
+                <Link key={warning.id} href={`/warnings/${warning.id}`} className="flex items-start gap-2 p-3 rounded-lg bg-bg-surface border border-bg-border hover:border-bg-hover transition-colors group">
                   <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${warning.severity === 'critical' ? 'bg-red-500' : warning.severity === 'high' ? 'bg-orange-400' : 'bg-yellow-500'}`} />
                   <div className="min-w-0">
                     <p className="text-xs text-text-muted">Warning · {warning.severity}</p>
