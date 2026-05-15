@@ -10,7 +10,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // NutriCoach Design Tokens
+      // Leaxaro Design Tokens
       colors: {
         // Primary — deep athletic blue/teal
         brand: {

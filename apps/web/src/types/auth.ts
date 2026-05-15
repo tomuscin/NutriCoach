@@ -1,4 +1,4 @@
-// Auth types & DTOs for NutriCoach
+// Auth types & DTOs for Leaxaro
 // Typed JWT, session, and auth context
 
 import type { UserRole, UserStatus } from '@prisma/client'

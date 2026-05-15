@@ -23,8 +23,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         >
           {/* Logo */}
           <div className="flex h-14 items-center gap-2.5 border-b border-border px-5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">N</span>
-            <span className="font-semibold text-sm tracking-tight">NutriCoach</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">L</span>
+            <span className="font-semibold text-sm tracking-tight">Leaxaro</span>
           </div>
 
           <AppSidebarNav email={user.email ?? ''} />
@@ -40,8 +40,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <header className="sticky top-0 z-40 border-b border-border glass md:hidden">
             <div className="h-14 flex items-center justify-between px-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground text-[10px] font-bold">N</span>
-                <span className="font-semibold text-sm">NutriCoach</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground text-[10px] font-bold">L</span>
+                <span className="font-semibold text-sm">Leaxaro</span>
               </div>
               <div className="flex items-center gap-1">
                 <a href="/notifications" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors" aria-label="Powiadomienia">

@@ -9,13 +9,13 @@ test.describe('Theme system', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage before each test
     await page.goto(BASE + '/auth/login')
-    await page.evaluate(() => localStorage.removeItem('nutricoach-theme'))
+    await page.evaluate(() => localStorage.removeItem('leaxaro-theme'))
   })
 
   // ── 1. Default: system mode ──────────────────────────────────────────────
   test('defaults to system theme (no localStorage)', async ({ page }) => {
     await page.goto(BASE + '/auth/login')
-    const lsValue = await page.evaluate(() => localStorage.getItem('nutricoach-theme'))
+    const lsValue = await page.evaluate(() => localStorage.getItem('leaxaro-theme'))
     // next-themes doesn't set localStorage for "system" by default until user picks
     expect(['system', null]).toContain(lsValue)
   })
@@ -24,7 +24,7 @@ test.describe('Theme system', () => {
   test('applies dark mode from localStorage before hydration (no flash)', async ({ page }) => {
     // Set dark before navigating
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.goto(BASE + '/auth/login')
     // Immediately check — should not flash
@@ -35,7 +35,7 @@ test.describe('Theme system', () => {
   // ── 3. Light mode from localStorage ──────────────────────────────────────
   test('applies light mode from localStorage', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'light')
+      localStorage.setItem('leaxaro-theme', 'light')
     })
     await page.goto(BASE + '/auth/login')
     const htmlClass = await page.locator('html').getAttribute('class')
@@ -46,7 +46,7 @@ test.describe('Theme system', () => {
   test('respects system dark preference when no localStorage', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.addInitScript(() => {
-      localStorage.removeItem('nutricoach-theme')
+      localStorage.removeItem('leaxaro-theme')
     })
     await page.goto(BASE + '/auth/login')
     const htmlClass = await page.locator('html').getAttribute('class')
@@ -58,7 +58,7 @@ test.describe('Theme system', () => {
   test('does not apply dark class with system light preference', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' })
     await page.addInitScript(() => {
-      localStorage.removeItem('nutricoach-theme')
+      localStorage.removeItem('leaxaro-theme')
     })
     await page.goto(BASE + '/auth/login')
     const htmlClass = await page.locator('html').getAttribute('class')
@@ -68,7 +68,7 @@ test.describe('Theme system', () => {
   // ── 6. Theme persists across navigation ───────────────────────────────────
   test('theme persists across page navigation', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.goto(BASE + '/auth/login')
     expect(await page.locator('html').getAttribute('class')).toContain('dark')
@@ -80,7 +80,7 @@ test.describe('Theme system', () => {
   // ── 7. Theme persists after refresh ──────────────────────────────────────
   test('dark mode persists after page refresh', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.goto(BASE + '/auth/login')
     await page.reload()
@@ -91,7 +91,7 @@ test.describe('Theme system', () => {
   // ── 8. Background color token applied ─────────────────────────────────────
   test('dark background token is applied on body', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.goto(BASE + '/auth/login')
     const bgColor = await page.evaluate(() =>
@@ -104,7 +104,7 @@ test.describe('Theme system', () => {
   // ── 9. No hardcoded white in toggle thumb ─────────────────────────────────
   test('toggle thumbs use semantic token, not hardcoded white', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.goto(BASE + '/onboarding')
     // Check that no element has literal white background via inline style
@@ -129,7 +129,7 @@ test.describe('Mobile dark mode', () => {
 
   test('body background not white in dark mode on mobile', async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('nutricoach-theme', 'dark')
+      localStorage.setItem('leaxaro-theme', 'dark')
     })
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.goto(BASE + '/auth/login')

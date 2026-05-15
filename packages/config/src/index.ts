@@ -1,9 +1,9 @@
 // @nutricoach/config — Shared configuration constants
 
 export const APP_CONFIG = {
-  name: 'NutriCoach',
+  name: 'Leaxaro',
   version: '0.1.0',
-  description: 'AI Personal Coach for nutrition, training and recovery',
+  description: 'AI-native Conversational Intelligence Platform for health, nutrition and performance',
 } as const
 
 // Nutrition defaults

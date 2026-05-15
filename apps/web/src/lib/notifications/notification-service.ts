@@ -156,7 +156,7 @@ export async function sendEmailNotification({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM ?? 'noreply@nutricoach.app',
+        from: process.env.EMAIL_FROM ?? 'noreply@leaxaro.app',
         to,
         subject,
         html,

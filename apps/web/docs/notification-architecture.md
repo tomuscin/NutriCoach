@@ -1,8 +1,8 @@
-# Notification Architecture — NutriCoach ETAP 7
+# Notification Architecture — Leaxaro ETAP 7
 
 ## Overview
 
-NutriCoach has a two-channel notification system:
+Leaxaro has a two-channel notification system:
 1. **In-app notifications** — stored in DB, shown in Notification Center (`/notifications`)
 2. **Push notifications** — browser Web Push API via VAPID, delivered via service worker
 

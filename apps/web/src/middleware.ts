@@ -1,4 +1,4 @@
-// NutriCoach — Auth middleware
+// Leaxaro — Auth middleware
 // Route protection, onboarding redirect, safe redirects, security headers
 //
 // Public routes: /auth/*, /api/auth/*, /api/health

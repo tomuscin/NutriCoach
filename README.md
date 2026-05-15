@@ -1,6 +1,6 @@
-# NutriCoach — README
+# Leaxaro — README
 
-AI Personal Coach for nutrition, training and recovery.
+AI-native Conversational Intelligence Platform for health, nutrition and performance.
 
 **Private project. Not affiliated with Profitia.**
 
@@ -45,7 +45,7 @@ npm run dev
 ## Project Structure
 
 ```
-NutriCoach/
+Leaxaro/
 ├── apps/
 │   ├── web/              # Main app (Next.js 15)
 │   ├── api/              # Future BFF

@@ -1,4 +1,4 @@
-# NutriCoach — Database Migration Strategy
+# Leaxaro — Database Migration Strategy
 # MySQL / MariaDB (WEBD.pl)
 
 ## Database target
@@ -204,7 +204,7 @@ Returns:
 ```json
 {
   "status": "ok | degraded | error",
-  "app": "NutriCoach",
+  "app": "Leaxaro",
   "version": "0.1.0",
   "timestamp": "2026-05-12T...",
   "components": {

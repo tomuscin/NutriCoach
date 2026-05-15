@@ -1,30 +1,95 @@
 /**
  * NCIC — Nutrition Conversational Intelligence Core
  *
- * Foundation package for the NutriCoach Conversational Intelligence Platform.
- * This package is the canonical home for all AI-native conversational logic:
- * intents, behaviors, capabilities, memory, orchestration, policies, and tools.
+ * Foundation package for the Leaxaro Conversational Intelligence Platform.
  *
- * Architecture direction:
- *   - conversational-first
- *   - runtime-first
- *   - event-driven
- *   - memory-oriented
- *   - capability-based
+ * ETAP 2.5.1 — Minimal Event & Signals Foundation
+ * ETAP 5.1   — Intent Classification Layer
+ * ETAP 5.2   — Conversation Runtime Assembly
  *
- * Status: FOUNDATION — no runtime logic implemented yet.
  * See /docs/NCIC-FOUNDATION.md for architecture decisions.
  */
 
-// Re-export canonical types as they are defined
-// export * from './behaviors';
-// export * from './capabilities';
-// export * from './intents';
-// export * from './memory';
-// export * from './orchestration';
-// export * from './policies';
-// export * from './runtime';
-// export * from './tools';
+// ─── Runtime Event Taxonomy ───────────────────────────────────────────────────
+export * from '../events/types'
+export * from '../events/index'
 
-export const NCIC_VERSION = '0.0.1';
-export const NCIC_NAME = 'Nutrition Conversational Intelligence Core';
+// ─── Signal Normalization Layer ───────────────────────────────────────────────
+export * from '../signals/types'
+export * from '../signals/normalizer'
+
+// ─── Intent Classification Layer ─────────────────────────────────────────────
+export * from '../intents/types'
+export * from '../intents/registry'
+export { classifyIntent } from '../intents/classifier'
+export * from '../intents/capabilities'
+// Note: heuristics exported for testing — not part of primary public API
+export { tokenize, matchKeywords, scoreAllIntents, needsFallback } from '../intents/heuristics'
+
+// ─── Runtime Event Bus & Flow ─────────────────────────────────────────────────
+export {
+  RuntimeEventBus,
+  runtimeEventBus,
+  emitEvent,
+  subscribe,
+  unsubscribe,
+} from '../runtime/bus'
+
+export {
+  getRuntimeState,
+  registerRuntimeFlowHandlers,
+  clearRuntimeState,
+} from '../runtime/flow'
+
+export {
+  createEmptySnapshot,
+} from '../runtime/state'
+
+export {
+  buildRuntimeContextHint,
+  processConversationalTurn,
+} from '../runtime/intent-integration'
+
+export type {
+  RuntimeContextSnapshot,
+  NutritionRuntimeState,
+  TrainingRuntimeState,
+  RecoveryRuntimeState,
+  BehavioralRuntimeState,
+  ConversationRuntimeState,
+} from '../runtime/state'
+
+export type { ConversationalTurnResult } from '../runtime/intent-integration'
+
+// ─── Conversation Runtime Layer (ETAP 5.2) ───────────────────────────────────
+export { processConversationTurn } from '../conversation/runtime'
+export type { ProcessConversationTurnInput } from '../conversation/runtime'
+
+export {
+  buildConversationContext,
+  buildRuntimeSignalSummary,
+  deriveRiskFlags,
+  buildContinuityHints,
+  selectResponseMode,
+} from '../conversation/context-builder'
+export type { BuildContextInput } from '../conversation/context-builder'
+
+export { planConversationalResponse } from '../conversation/response-planner'
+
+export type {
+  ConversationContext,
+  ConversationTurnResult,
+  ResponsePlan,
+  ResponseMode,
+  ResponseStrategy,
+  RiskFlag,
+  ContinuityHint,
+  ActiveDomain,
+  InterventionPriority,
+  RuntimeSignalSummary,
+} from '../conversation/types'
+
+// ─── Package Identity ─────────────────────────────────────────────────────────
+export const NCIC_VERSION = '0.1.0'
+export const NCIC_NAME = 'Nutrition Conversational Intelligence Core'
+

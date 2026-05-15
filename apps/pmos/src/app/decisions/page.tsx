@@ -11,6 +11,15 @@ async function getDecisions() {
       nodes: {
         include: { node: { select: { id: true, title: true } } },
       },
+      conversations: {
+        include: {
+          conversation: {
+            select: { id: true, summary: true, conversationType: true, importanceLevel: true, timestamp: true },
+          },
+        },
+        orderBy: { conversation: { timestamp: 'desc' } },
+        take: 5,
+      },
     },
   })
 }

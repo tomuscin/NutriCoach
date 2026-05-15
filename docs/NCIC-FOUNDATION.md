@@ -1,8 +1,10 @@
 # NCIC — Nutrition Conversational Intelligence Core
 
+> **Note:** NCIC is an internal runtime architecture layer within Leaxaro. The "Nutrition" in NCIC reflects the origin domain; NCIC now serves as the runtime for nutrition, training, recovery, and behavioral intelligence across the full Leaxaro platform.
+
 ## What is NCIC?
 
-The Nutrition Conversational Intelligence Core is the canonical home for all AI-native conversational logic in NutriCoach.
+The Nutrition Conversational Intelligence Core is the canonical home for all AI-native conversational logic in Leaxaro.
 
 NCIC is NOT:
 - a chatbot
@@ -24,7 +26,7 @@ NCIC IS:
 packages/ncic/
 ```
 
-NCIC is a monorepo package, importable by any app or service within NutriCoach.
+NCIC is a monorepo package, importable by any app or service within Leaxaro.
 
 ---
 

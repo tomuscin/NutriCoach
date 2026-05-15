@@ -1,4 +1,4 @@
-# NutriCoach Auth — UX Audit
+# Leaxaro Auth — UX Audit
 **Date**: 2025  
 **Scope**: Registration, Login, Email Verification, Password Reset, Onboarding, Settings  
 **Methodology**: Heuristic evaluation, mobile ergonomics, cognitive load analysis
@@ -115,7 +115,7 @@
 **Effort**: Trivial
 
 ### UX-EV-05: From address recognition — MEDIUM ⚠️
-**Current**: EMAIL_FROM in .env — ensure it's recognizable (e.g., hello@nutricoach.app)  
+**Current**: EMAIL_FROM in .env — ensure it's recognizable (e.g., hello@leaxaro.app)  
 **Recommendation**: Use branded from address with reply-to  
 **Effort**: Config
 

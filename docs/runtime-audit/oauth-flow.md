@@ -1,4 +1,4 @@
-# OAuth Lifecycle — NutriCoach (ETAP 6.5+)
+# OAuth Lifecycle — Leaxaro (ETAP 6.5+)
 
 ## Flow: TrainingPeaks Connect
 

@@ -48,7 +48,7 @@ export function VerifySuccessClient() {
       <div className="space-y-2">
         <h1 className="text-xl font-bold tracking-tight">Email potwierdzony!</h1>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-          Twoje konto jest aktywne. Możesz teraz zalogować się i korzystać z NutriCoach.
+          Twoje konto jest aktywne. Możesz teraz zalogować się i korzystać z Leaxaro.
         </p>
       </div>
 

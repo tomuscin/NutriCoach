@@ -17,7 +17,7 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === 'development'
 const RESEND_API_KEY  = process.env.RESEND_API_KEY ?? ''
 const EMAIL_FROM_RAW  = process.env.EMAIL_FROM ?? ''
 const APP_URL         = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3100'
-const APP_NAME        = process.env.NEXT_PUBLIC_APP_NAME ?? 'NutriCoach'
+const APP_NAME        = process.env.NEXT_PUBLIC_APP_NAME ?? 'Leaxaro'
 
 // Display-name wrapper — Resend accepts plain address or "Name <addr>" form
 const EMAIL_FROM = EMAIL_FROM_RAW.includes('<')
@@ -87,8 +87,8 @@ export async function POST(req: NextRequest) {
       html,
       text,
       headers: {
-        'X-NutriCoach-Environment': 'development',
-        'X-NutriCoach-Test':        'true',
+        'X-Leaxaro-Environment': 'development',
+        'X-Leaxaro-Test':        'true',
       },
     })
 
@@ -288,7 +288,7 @@ function buildTestEmailText(p: TemplateParams): string {
     `${p.appName} — Test infrastruktury email`,
     '==========================================',
     '',
-    'To jest test infrastruktury email NutriCoach.',
+    'To jest test infrastruktury email Leaxaro.',
     'Ten email potwierdza, że pipeline Resend działa poprawnie.',
     '',
     `Timestamp:       ${p.timestamp}`,

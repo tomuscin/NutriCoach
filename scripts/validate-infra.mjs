@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// NutriCoach — Infrastructure Validation Script
+// Leaxaro — Infrastructure Validation Script
 // Run before deploy: node scripts/validate-infra.mjs
 // Checks: env vars, DB connectivity, Prisma schema, Redis
 
@@ -51,7 +51,7 @@ if (existsSync(envFile)) {
 }
 
 console.log('═══════════════════════════════════════════════════════')
-console.log('  NutriCoach — Infrastructure Validation')
+console.log('  Leaxaro — Infrastructure Validation')
 console.log(`  ${new Date().toISOString()}`)
 console.log('═══════════════════════════════════════════════════════')
 

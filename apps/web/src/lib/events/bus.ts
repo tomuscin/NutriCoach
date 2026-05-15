@@ -5,7 +5,7 @@
 import 'server-only'
 import { logger } from '@/lib/logger'
 
-export type NutriCoachEvent =
+export type AppEvent =
   | 'workout_synced'
   | 'recovery_updated'
   | 'readiness_recalculated'
@@ -18,10 +18,10 @@ export type NutriCoachEvent =
 type EventPayload = Record<string, unknown>
 type EventHandler = (payload: EventPayload) => Promise<void>
 
-const handlers = new Map<NutriCoachEvent, EventHandler[]>()
+const handlers = new Map<AppEvent, EventHandler[]>()
 
 /** Register a handler for an event type */
-export function onEvent(event: NutriCoachEvent, handler: EventHandler): void {
+export function onEvent(event: AppEvent, handler: EventHandler): void {
   if (!handlers.has(event)) handlers.set(event, [])
   handlers.get(event)!.push(handler)
 }
@@ -30,7 +30,7 @@ export function onEvent(event: NutriCoachEvent, handler: EventHandler): void {
  * Emit an event — runs all registered handlers sequentially.
  * Non-fatal: handler failures are logged but don't throw.
  */
-export async function emitEvent(event: NutriCoachEvent, payload: EventPayload): Promise<void> {
+export async function emitEvent(event: AppEvent, payload: EventPayload): Promise<void> {
   logger.debug({ event, payload }, 'Event emitted')
 
   const eventHandlers = handlers.get(event) ?? []

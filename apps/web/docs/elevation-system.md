@@ -1,4 +1,4 @@
-# Elevation System — NutriCoach Component Reference
+# Elevation System — Leaxaro Component Reference
 
 ## Component Classes (globals.css @layer components)
 

@@ -1,4 +1,4 @@
-# NutriCoach — AGENTS.md
+# Leaxaro — AGENTS.md
 # Instructions for AI coding assistants working on this project
 
 ## CRITICAL: Environment Isolation
@@ -6,10 +6,10 @@ This project is PRIVATE. It must NEVER share code, dependencies, API keys,
 database connections, GitHub accounts, or any resources with the Profitia workspace.
 
 ## Project Location
-/Users/tomaszuscinski/Documents/Visual Code Studio/NutriCoach/
+/Users/tomaszuscinski/Projects/NutriCoach/
 
 ## Ecosystem
-NutriCoach is the THIRD autonomous development ecosystem, peer to Profitia and Private.
+Leaxaro is the THIRD autonomous development ecosystem, peer to Profitia and Private.
 NEVER share secrets, billing, infra, or database with other ecosystems.
 Architecture: conversational-first, runtime-first, event-driven, capability-based.
 NCIC (Nutrition Conversational Intelligence Core) = packages/ncic/ — canonical AI package.
@@ -21,7 +21,7 @@ ETAP 3 complete (Auth & Identity Foundation). Starting ETAP 4 (Dashboard & Data 
 ## Infrastructure Status (ETAP 2.5 — validated 2026-05-12)
 - **DB**: MySQL 8.0.32 (Percona) @ mn05.webd.pl — CONNECTED ✅
 - **Tables**: 20 tables created via `prisma db push` ✅
-- **Seed**: realistic cyclist data (tomasz@nutricoach.local) ✅
+- **Seed**: realistic cyclist data (tomasz@leaxaro.local) ✅
 - **Prisma client**: generated v5.22.0 ✅
 - **Infra validation**: `node scripts/validate-infra.mjs` — 19 passed, 0 failed ✅
 - **`prisma db push`**: use instead of `migrate dev` on WEBD.pl (no shadow DB permission)
@@ -74,6 +74,8 @@ ETAP 3 complete (Auth & Identity Foundation). Starting ETAP 4 (Dashboard & Data 
 | `@nutricoach/nutrition-engine` | BMR/TDEE, macro splits, daily balance, trend analyzers, projections |
 | `@nutricoach/training-engine` | TSS, PMC (CTL/ATL/TSB), FTP zones, incremental PMC update, trend analyzers |
 | `@nutricoach/recovery-engine` | Readiness scoring, HRV baseline, sleep analysis, recovery analyzers |
+
+> Note: Package namespace `@nutricoach/*` is retained intentionally — technical namespace, not brand. See Brand Evolution in docs/architecture.md.
 
 ## Key Files
 - Schema: prisma/schema.prisma (25 enums, 20 models — MySQL provider)

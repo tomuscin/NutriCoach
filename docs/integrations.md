@@ -1,4 +1,4 @@
-# NutriCoach — Integrations
+# Leaxaro — Integrations
 
 ## TrainingPeaks
 
@@ -64,7 +64,7 @@ Write TPSyncLog (success/failed/partial)
 
 ### Data Mapped from TrainingPeaks
 
-| TP Field | NutriCoach Field |
+| TP Field | Leaxaro Field |
 |----------|-----------------|
 | workoutId | Workout.externalId |
 | startTime | Workout.date |
@@ -95,7 +95,7 @@ Similar to TrainingPeaks. Garmin uses OAuth 1.0a (legacy) or OAuth 2.0 depending
 
 ### Data Mapped from Garmin
 
-| Garmin Field | NutriCoach Field |
+| Garmin Field | Leaxaro Field |
 |-------------|-----------------|
 | activity.durationInSeconds | Workout.durationMinutes |
 | activity.activeKilocalories | Workout.caloriesBurned |

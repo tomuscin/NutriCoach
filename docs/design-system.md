@@ -1,4 +1,4 @@
-# NutriCoach — Design System
+# Leaxaro — Design System
 
 ## Design Philosophy
 
@@ -83,7 +83,7 @@ TailwindCSS scale (4px base):
 ### Primitives (shadcn/ui)
 Button, Card, Input, Label, Badge, Progress, Separator, Avatar, Tabs, Dialog, DropdownMenu, Toast, ScrollArea, Select, Tooltip
 
-### NutriCoach Widgets (custom)
+### Leaxaro Widgets (custom)
 
 **CalorieRing**
 - SVG ring showing consumed vs target
@@ -117,7 +117,7 @@ Button, Card, Input, Label, Badge, Progress, Separator, Avatar, Tabs, Dialog, Dr
 
 **AIMessageBubble**
 - Styled message container
-- NutriCoach avatar icon
+- Leaxaro avatar icon
 - Animated typing indicator when streaming
 
 ---

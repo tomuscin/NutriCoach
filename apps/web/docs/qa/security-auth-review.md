@@ -1,4 +1,4 @@
-# NutriCoach Auth — Security Review
+# Leaxaro Auth — Security Review
 **Date**: 2025  
 **Scope**: Authentication, Authorization, Session Management, Input Validation, Rate Limiting  
 **Framework**: OWASP Top 10 (2021), OWASP ASVS 4.0 Level 2

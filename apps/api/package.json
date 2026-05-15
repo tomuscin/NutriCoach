@@ -2,7 +2,7 @@
   "name": "@nutricoach/api",
   "version": "0.1.0",
   "private": true,
-  "description": "NutriCoach BFF — Backend For Frontend (future extraction from Next.js API routes)",
+  "description": "Leaxaro BFF — Backend For Frontend (future extraction from Next.js API routes)",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc --project tsconfig.json",

@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { RoadmapTree } from '@/components/roadmap/RoadmapTree'
+import { RoadmapView } from '@/components/roadmap/RoadmapView'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 async function getRoadmapRoots() {
   return db.roadmapNode.findMany({
     where: { parentId: null },
-    orderBy: { order: 'asc' },
+    orderBy: { sortKey: 'asc' },
     include: {
       children: {
         orderBy: { order: 'asc' },
@@ -44,44 +44,33 @@ export default async function RoadmapPage() {
   return (
     <div className="min-h-full">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-bg-base/95 backdrop-blur border-b border-bg-border px-8 py-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-text-primary text-lg font-medium">Roadmap</h1>
-            <p className="text-text-secondary text-sm mt-0.5">
-              {doneNodes}/{totalNodes} done
-            </p>
-          </div>
-          <Link
-            href="/roadmap/new"
-            className="flex items-center gap-2 px-3 py-1.5 rounded bg-accent/10 text-accent text-sm hover:bg-accent/20 transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            Add node
-          </Link>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-bg-border">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-text-primary text-sm font-semibold">Roadmap</h1>
+          <span className="text-text-tertiary text-2xs font-mono">{doneNodes}/{totalNodes} done</span>
         </div>
+        <Link
+          href="/roadmap/new"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-accent/10 text-accent text-2xs font-medium hover:bg-accent/20 transition-colors"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          Add node
+        </Link>
       </div>
 
       {/* Content */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-4">
         {nodes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-text-secondary text-sm">No roadmap nodes yet.</p>
-            <Link
-              href="/roadmap/new"
-              className="mt-4 text-accent text-sm hover:underline"
-            >
+            <Link href="/roadmap/new" className="mt-3 text-accent text-2xs hover:underline">
               Create first node
             </Link>
           </div>
         ) : (
-          <div className="space-y-1">
-            {nodes.map((node) => (
-              <RoadmapTree key={node.id} node={node} depth={0} />
-            ))}
-          </div>
+          <RoadmapView nodes={nodes as Parameters<typeof RoadmapView>[0]['nodes']} />
         )}
       </div>
     </div>

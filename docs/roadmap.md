@@ -1,4 +1,4 @@
-# NutriCoach — Roadmap
+# Leaxaro — Roadmap
 
 ## ETAP 1 — Architecture & Foundation ✅
 **Goal**: Professional project structure, no business logic yet.
@@ -55,7 +55,7 @@ Scope:
 
 Scope:
 - shadcn/ui components setup (Button, Card, Input, etc.)
-- Custom NutriCoach widgets (CalorieRing, MacroBar, StatCard)
+- Custom Leaxaro widgets (CalorieRing, MacroBar, StatCard)
 - Sidebar + MobileBottomNav + MobileTopBar
 - Dark/light mode (next-themes)
 - Excel parser implementation (exceljs / xlsx)

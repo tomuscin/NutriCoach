@@ -1,4 +1,4 @@
-// NutriCoach Workers — Background Jobs Registry
+// Leaxaro Workers — Background Jobs Registry
 // 
 // JOBS PLANNED:
 // ─────────────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@
 // - Render background workers (for heavier compute)
 // - BullMQ + Redis (most flexible, requires Redis)
 
-console.log('NutriCoach Workers — job registry initialized')
+console.log('Leaxaro Workers — job registry initialized')
 console.log('Workers implementation: ETAP 5–9')
 
 export const JOB_REGISTRY = {

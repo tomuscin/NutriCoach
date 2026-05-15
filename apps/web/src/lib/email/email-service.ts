@@ -7,9 +7,9 @@ import { logger } from '@/lib/logger'
 import * as Sentry from '@sentry/nextjs'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = process.env.EMAIL_FROM ?? 'NutriCoach <noreply@nutricoach.app>'
+const FROM = process.env.EMAIL_FROM ?? 'Leaxaro <noreply@leaxaro.app>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3100'
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'NutriCoach'
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'Leaxaro'
 
 // ─── Design tokens (inline, mobile-safe, dark-mode-safe) ─────────────────────
 const T = {
@@ -95,7 +95,7 @@ function emailLayout(preheader: string, body: string): string {
                 Wysłane przez ${APP_NAME} &middot; Nie odpowiadaj na tę wiadomość
               </p>
               <p style="font-size:11px;color:${T.faint};margin:8px 0 0">
-                &copy; ${new Date().getFullYear()} NutriCoach. Wszelkie prawa zastrzeżone.
+                &copy; ${new Date().getFullYear()} Leaxaro. Wszelkie prawa zastrzeżone.
               </p>
             </td>
           </tr>

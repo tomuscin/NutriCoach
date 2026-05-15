@@ -17,20 +17,20 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'NutriCoach',
-    template: '%s | NutriCoach',
+    default: 'Leaxaro',
+    template: '%s | Leaxaro',
   },
-  description: 'AI Personal Coach dla sportowców — żywienie, trening, regeneracja',
+  description: 'AI-native Conversational Intelligence Platform — żywienie, trening, regeneracja',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'NutriCoach',
+    title: 'Leaxaro',
   },
   openGraph: {
     type: 'website',
     locale: 'pl_PL',
-    siteName: 'NutriCoach',
+    siteName: 'Leaxaro',
   },
   robots: {
     index: false,
@@ -67,7 +67,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="NutriCoach" />
+        <meta name="apple-mobile-web-app-title" content="Leaxaro" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         {/* iOS splash screens — generated from manifest colors */}
         <link rel="apple-touch-startup-image" href="/icons/apple-touch-icon.png" />
@@ -75,7 +75,7 @@ export default function RootLayout({
         {/* No-flash script: reads localStorage before React hydrates, applies dark class immediately */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('nutricoach-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t==='system'&&d)||(!t&&d)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('leaxaro-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t==='system'&&d)||(!t&&d)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
           }}
         />
       </head>

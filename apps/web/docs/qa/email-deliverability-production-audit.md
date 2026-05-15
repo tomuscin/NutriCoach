@@ -1,5 +1,5 @@
 # Email Deliverability & Auth Flow — Production Audit
-**NutriCoach** · https://nutricoach-nine.vercel.app  
+**Leaxaro** · https://nutricoach-nine.vercel.app  
 **Date:** 2026-05-13  
 **Auditor:** Automated + Manual code audit  
 **Scope:** Resend + Vercel production — email E2E, deliverability, security, PWA/mobile UX
@@ -34,7 +34,7 @@
 | Variable | Status | Notes |
 |---|---|---|
 | `RESEND_API_KEY` | ✅ Set | Added 2026-05-13 |
-| `EMAIL_FROM` | ✅ Set | `NutriCoach <coach@send.tomaszuscinski.pl>` |
+| `EMAIL_FROM` | ✅ Set | `Leaxaro <coach@send.tomaszuscinski.pl>` |
 | `NEXT_PUBLIC_APP_URL` | ✅ Set | Added 2026-05-13 (was missing — **critical fix**) |
 | `DATABASE_URL` | ✅ Set | |
 | `NEXTAUTH_SECRET` | ✅ Set | |
@@ -58,9 +58,9 @@
 - Resend uses AWS SES shared IP warm pool — good initial reputation
 - Transactional content (verify, reset) — low spam risk
 - Subject lines reviewed:
-  - `Potwierdź swój email w NutriCoach` — ✅ clear, not spammy
-  - `Resetowanie hasła — NutriCoach` — ✅ clear, professional
-  - `Witaj w NutriCoach, {name}!` — ✅ warm, personal
+  - `Potwierdź swój email w Leaxaro` — ✅ clear, not spammy
+  - `Resetowanie hasła — Leaxaro` — ✅ clear, professional
+  - `Witaj w Leaxaro, {name}!` — ✅ warm, personal
 - **Predicted result:** Inbox delivery (>95% for Gmail with clean domain)
 
 ### Spam Risk Factors Checked
@@ -246,7 +246,7 @@ File: `apps/web/e2e/auth/email-flow.spec.ts`
 1. **REDIS_URL (Upstash)** — rate limiter is in-memory, not shared across serverless instances. Fine for launch, problematic at scale.
 2. **Manual Gmail inbox test** — verify DKIM/SPF shows correctly in Gmail header ("mailed by: send.tomaszuscinski.pl", "signed by: send.tomaszuscinski.pl")
 3. **Mobile Gmail link test** — click verify + reset from Gmail iOS/Android app, confirm links open correctly
-4. **Custom domain alias** — consider `https://nutricoach.app` for production (current URL is Vercel deployment URL, not branded)
+4. **Custom domain alias** — consider `https://leaxaro.app` for production (current URL is Vercel deployment URL, not branded)
 5. **Unsubscribe header for insight emails** — `List-Unsubscribe` header for marketing/insight emails (transactional verify/reset don't require it)
 
 ### 🔴 NOT BLOCKERS (future improvements)
@@ -268,7 +268,7 @@ Run this checklist against https://nutricoach-nine.vercel.app before public laun
 [ ] Check Gmail header: "mailed by: send.tomaszuscinski.pl"
 [ ] Check Gmail header: "signed by: send.tomaszuscinski.pl"
 [ ] Check Gmail: email in Inbox (not Spam)
-[ ] Check sender name displays as "NutriCoach" (not email address)
+[ ] Check sender name displays as "Leaxaro" (not email address)
 [ ] Check preheader visible in Gmail inbox preview
 [ ] Forgot password → receive email → click link → reset works
 [ ] Reset password on mobile Gmail app

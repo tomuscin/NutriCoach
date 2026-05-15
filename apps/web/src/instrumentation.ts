@@ -18,7 +18,7 @@ export async function register() {
     const startMs = Date.now()
 
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    console.log('  NutriCoach — starting up')
+    console.log('  Leaxaro — starting up')
     console.log(`  Env: ${process.env.NODE_ENV ?? 'unknown'}`)
     console.log(`  Node: ${process.version}`)
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')

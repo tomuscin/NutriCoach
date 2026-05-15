@@ -1,8 +1,8 @@
-# Auth Flow — NutriCoach ETAP 7
+# Auth Flow — Leaxaro ETAP 7
 
 ## Overview
 
-NutriCoach uses NextAuth v5 (beta) with JWT strategy. All passwords are hashed with bcryptjs. Tokens (email verify, password reset) are stored in the `VerificationToken` table with `identifier` namespacing.
+Leaxaro uses NextAuth v5 (beta) with JWT strategy. All passwords are hashed with bcryptjs. Tokens (email verify, password reset) are stored in the `VerificationToken` table with `identifier` namespacing.
 
 ## Registration Flow
 

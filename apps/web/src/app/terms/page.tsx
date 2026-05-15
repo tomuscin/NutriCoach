@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Regulamin',
-  description: 'Regulamin korzystania z NutriCoach',
+  description: 'Regulamin korzystania z Leaxaro',
 }
 
 export default function TermsPage() {
@@ -15,11 +15,11 @@ export default function TermsPage() {
         </div>
 
         <Section title="1. Akceptacja warunków">
-          <p>Korzystając z aplikacji NutriCoach, akceptujesz niniejszy Regulamin. Jeśli nie zgadzasz się z warunkami, zaprzestań korzystania z usługi.</p>
+          <p>Korzystając z aplikacji Leaxaro, akceptujesz niniejszy Regulamin. Jeśli nie zgadzasz się z warunkami, zaprzestań korzystania z usługi.</p>
         </Section>
 
         <Section title="2. Opis usługi">
-          <p>NutriCoach jest aplikacją wspierającą coaching żywieniowy dla sportowców. Aplikacja łączy dane treningowe z TrainingPeaks z rekomendacjami żywieniowymi generowanymi przez sztuczną inteligencję.</p>
+          <p>Leaxaro jest aplikacją wspierającą coaching żywieniowy dla sportowców. Aplikacja łączy dane treningowe z TrainingPeaks z rekomendacjami żywieniowymi generowanymi przez sztuczną inteligencję.</p>
         </Section>
 
         <Section title="3. Konto użytkownika">
@@ -36,11 +36,11 @@ export default function TermsPage() {
         </Section>
 
         <Section title="5. Ograniczenia odpowiedzialności">
-          <p>NutriCoach nie jest aplikacją medyczną. Rekomendacje AI nie zastępują porady lekarza ani dietetyka. Szczegóły w <a href="/health-disclaimer" className="text-primary hover:underline">Zastrzeżeniach zdrowotnych</a>.</p>
+          <p>Leaxaro nie jest aplikacją medyczną. Rekomendacje AI nie zastępują porady lekarza ani dietetyka. Szczegóły w <a href="/health-disclaimer" className="text-primary hover:underline">Zastrzeżeniach zdrowotnych</a>.</p>
         </Section>
 
         <Section title="6. Własność intelektualna">
-          <p>Wszelkie prawa do aplikacji, algorytmów i treści należą do NutriCoach. Treści generowane przez AI są dostarczane wyłącznie na użytek osobisty.</p>
+          <p>Wszelkie prawa do aplikacji, algorytmów i treści należą do Leaxaro. Treści generowane przez AI są dostarczane wyłącznie na użytek osobisty.</p>
         </Section>
 
         <Section title="7. Zmiany Regulaminu">
@@ -48,7 +48,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="8. Kontakt">
-          <p>Pytania dotyczące Regulaminu: <a href="mailto:support@nutricoach.app" className="text-primary hover:underline">support@nutricoach.app</a></p>
+          <p>Pytania dotyczące Regulaminu: <a href="mailto:support@leaxaro.app" className="text-primary hover:underline">support@leaxaro.app</a></p>
         </Section>
 
         <div className="pt-4 border-t border-border">

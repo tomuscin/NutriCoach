@@ -1,4 +1,4 @@
-// Workout Mapper — TrainingPeaks → NutriCoach normalized workout
+// Workout Mapper — TrainingPeaks → Leaxaro normalized workout
 import type { TPWorkout } from '../providers/trainingpeaks/types'
 import { TP_SPORT_MAP } from '../providers/trainingpeaks/types'
 import type { StravaSummaryActivity } from '../providers/strava/types'

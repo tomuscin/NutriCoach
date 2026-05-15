@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Polityka prywatności',
-  description: 'Polityka prywatności NutriCoach',
+  description: 'Polityka prywatności Leaxaro',
 }
 
 export default function PrivacyPage() {
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         </div>
 
         <Section title="1. Administrator danych">
-          <p>Administratorem Twoich danych osobowych jest NutriCoach (kontakt: <a href="mailto:privacy@nutricoach.app" className="text-primary hover:underline">privacy@nutricoach.app</a>).</p>
+          <p>Administratorem Twoich danych osobowych jest Leaxaro (kontakt: <a href="mailto:privacy@leaxaro.app" className="text-primary hover:underline">privacy@leaxaro.app</a>).</p>
         </Section>
 
         <Section title="2. Jakie dane zbieramy">
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
             <li>Sprzeciw wobec przetwarzania</li>
             <li>Wycofanie zgody w dowolnym momencie</li>
           </ul>
-          <p className="mt-2">Aby skorzystać z praw, skontaktuj się: <a href="mailto:privacy@nutricoach.app" className="text-primary hover:underline">privacy@nutricoach.app</a></p>
+          <p className="mt-2">Aby skorzystać z praw, skontaktuj się: <a href="mailto:privacy@leaxaro.app" className="text-primary hover:underline">privacy@leaxaro.app</a></p>
         </Section>
 
         <Section title="6. Przechowywanie danych">

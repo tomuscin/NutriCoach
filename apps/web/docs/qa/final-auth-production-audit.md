@@ -1,4 +1,4 @@
-# NutriCoach Auth — Final Production Audit
+# Leaxaro Auth — Final Production Audit
 **Date**: 2025  
 **Auditor**: Automated QA Pass (ETAP 7 + ETAP 8)  
 **Scope**: Registration → Email Verify → Login → Onboarding → Settings → Push → TP Integration  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The NutriCoach authentication system underwent a comprehensive end-to-end audit covering security, UX, mobile ergonomics, runtime reliability, and code correctness. **8 bugs were found and fixed** during this audit — including 2 critical security/correctness issues that would have prevented email verification from working entirely.
+The Leaxaro authentication system underwent a comprehensive end-to-end audit covering security, UX, mobile ergonomics, runtime reliability, and code correctness. **8 bugs were found and fixed** during this audit — including 2 critical security/correctness issues that would have prevented email verification from working entirely.
 
 The system is **solid in its architectural choices** (NextAuth v5 JWT, Prisma ORM, bcrypt-12, Resend email, VAPID push) and **ready for single-instance production** with 2 blockers addressed pre-launch.
 

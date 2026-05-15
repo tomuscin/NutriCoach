@@ -223,7 +223,7 @@ export function VerifyEmailPendingClient({ email }: Props) {
               {isPending ? (
                 <><RefreshCw className="h-4 w-4 animate-spin" />Logowanie…</>
               ) : (
-                <><Zap className="h-4 w-4" />Wejdź do NutriCoach</>
+                <><Zap className="h-4 w-4" />Wejdź do Leaxaro</>
               )}
             </button>
           </form>

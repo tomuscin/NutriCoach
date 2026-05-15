@@ -72,7 +72,7 @@ function IOSWalkthrough({ onClose }: { onClose: () => void }) {
             </svg>
           </div>
           <div>
-            <h2 className="font-semibold text-foreground text-sm">Zainstaluj NutriCoach</h2>
+            <h2 className="font-semibold text-foreground text-sm">Zainstaluj Leaxaro</h2>
             <p className="text-xs text-muted-foreground">Dostęp jak do natywnej aplikacji</p>
           </div>
           <button

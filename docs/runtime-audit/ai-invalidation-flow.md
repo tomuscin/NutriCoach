@@ -1,4 +1,4 @@
-# AI Invalidation Flow — NutriCoach (ETAP 6.5+)
+# AI Invalidation Flow — Leaxaro (ETAP 6.5+)
 
 ## Trigger Chain
 

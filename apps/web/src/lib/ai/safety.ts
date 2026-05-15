@@ -51,7 +51,7 @@ export function checkMessageSafety(message: string): SafetyCheckResult {
     if (lower.includes(keyword)) {
       return {
         safe: false,
-        reason: `Temat "${keyword}" wykracza poza zakres NutriCoach. Skonsultuj się z odpowiednim specjalistą.`,
+        reason: `Temat "${keyword}" wykracza poza zakres Leaxaro. Skonsultuj się z odpowiednim specjalistą.`,
       }
     }
   }

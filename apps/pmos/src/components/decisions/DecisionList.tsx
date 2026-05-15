@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 type NodeRef = { node: { id: string; title: string } }
+type ConvRef = { conversation: { id: string; summary: string; conversationType: string; importanceLevel: string; timestamp: Date } }
 
 interface Decision {
   id: string
@@ -14,6 +16,7 @@ interface Decision {
   affectedSystems: string[]
   createdAt: Date
   nodes: NodeRef[]
+  conversations?: ConvRef[]
 }
 
 interface DecisionListProps {
@@ -112,6 +115,30 @@ function DecisionCard({ decision }: { decision: Decision }) {
                   >
                     {node.title.slice(0, 50)}
                   </span>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {decision.conversations && decision.conversations.length > 0 && (
+            <Section label="Related Conversations">
+              <div className="space-y-1.5">
+                {decision.conversations.map(({ conversation }) => (
+                  <Link
+                    key={conversation.id}
+                    href={`/conversations/${conversation.id}`}
+                    className="flex items-start gap-2 p-2 rounded hover:bg-bg-elevated transition-colors group"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-cyan-400/70 mt-1.5 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-text-secondary group-hover:text-accent transition-colors line-clamp-1">
+                        {conversation.summary}
+                      </p>
+                      <p className="text-2xs text-text-muted mt-0.5">
+                        {conversation.conversationType.replace('_', ' ')} · {conversation.importanceLevel} · {new Date(conversation.timestamp).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </Section>

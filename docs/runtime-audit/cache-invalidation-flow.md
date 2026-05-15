@@ -1,8 +1,8 @@
-# Cache Invalidation Flow — NutriCoach (ETAP 6.5+)
+# Cache Invalidation Flow — Leaxaro (ETAP 6.5+)
 
 ## Cache Layer
 
-NutriCoach uses **Next.js built-in cache** (fetch cache + React cache) with tag-based invalidation.
+Leaxaro uses **Next.js built-in cache** (fetch cache + React cache) with tag-based invalidation.
 No Redis, no in-memory LRU — all Next.js Data Cache.
 
 ## Cache Tags

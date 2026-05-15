@@ -1,4 +1,4 @@
-# Visual Polish Pass — NutriCoach
+# Visual Polish Pass — Leaxaro
 
 Premium visual systems refinement pass targeting App Store / Linear / Vercel quality dark UX.
 

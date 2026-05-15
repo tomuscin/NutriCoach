@@ -1,4 +1,4 @@
-# NutriCoach Auth — Runtime Failures Analysis
+# Leaxaro Auth — Runtime Failures Analysis
 **Date**: 2025  
 **Scope**: Auth flow runtime risks, failure modes, chaos scenarios, race conditions  
 **Status**: Pre-production review

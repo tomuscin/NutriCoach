@@ -1,4 +1,4 @@
-# Runtime Risk Analysis — NutriCoach (ETAP 6.5+)
+# Runtime Risk Analysis — Leaxaro (ETAP 6.5+)
 
 Updated: 2026-05-12
 Status: Pre-production / ETAP 6.75 hardening

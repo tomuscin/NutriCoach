@@ -49,7 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
 export function createWorkerConnection(): Redis {
   if (!REDIS_URL) {
     throw new Error(
-      '[NutriCoach] Redis is not configured. Set REDIS_URL to enable queue workers.\n' +
+      '[Leaxaro] Redis is not configured. Set REDIS_URL to enable queue workers.\n' +
         'Use Upstash (free tier): https://upstash.com',
     )
   }

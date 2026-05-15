@@ -107,7 +107,7 @@ async function processStravaEvent(event: StravaWebhookEvent, rawBody: string): P
   })
 
   try {
-    // Find which NutriCoach user owns this Strava athlete
+    // Find which Leaxaro user owns this Strava athlete
     const integration = await db.integration.findFirst({
       where: {
         provider: 'STRAVA',

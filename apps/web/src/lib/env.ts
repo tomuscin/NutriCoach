@@ -1,4 +1,4 @@
-// NutriCoach — Environment Validator
+// Leaxaro — Environment Validator
 // Validates required env vars at startup. Fails fast with actionable errors.
 // Import at the top of instrumentation.ts (Next.js entry point).
 
@@ -35,7 +35,7 @@ const ENV_SPEC: EnvSpec[] = [
     required: true,
     description: 'App base URL for NextAuth',
     validate: (v) => v.startsWith('http://') || v.startsWith('https://'),
-    hint: 'Example: http://localhost:3100 (dev) or https://nutricoach.app (prod)',
+    hint: 'Example: http://localhost:3100 (dev) or https://leaxaro.app (prod)',
   },
   // ─── OpenAI (required from ETAP 4+) ─────────────────────────────────────
   {
@@ -106,13 +106,13 @@ export function assertEnv(): void {
   const isDev = process.env.NODE_ENV !== 'production'
 
   if (result.warnings.length > 0 && isDev) {
-    console.warn('[NutriCoach] ENV warnings:')
+    console.warn('[Leaxaro] ENV warnings:')
     result.warnings.forEach((w) => console.warn(`  ⚠  ${w}`))
   }
 
   if (!result.valid) {
     const message = [
-      '[NutriCoach] FATAL: Invalid environment configuration.',
+      '[Leaxaro] FATAL: Invalid environment configuration.',
       ...result.errors.map((e) => `  ✗ ${e}`),
       '',
       'Fix the issues above in apps/web/.env.local',

@@ -1,4 +1,4 @@
-# Sync Lifecycle — NutriCoach (ETAP 6.5+)
+# Sync Lifecycle — Leaxaro (ETAP 6.5+)
 
 ## Sync Triggers
 
@@ -37,7 +37,7 @@
    - Returns TPWorkout[]
 
 8. Normalize: normalizeTPWorkout() per workout
-   - Maps TP fields to NutriCoach schema
+   - Maps TP fields to Leaxaro schema
    - Sport type mapping via TP_SPORT_MAP
 
 9. Persist workouts:

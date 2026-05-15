@@ -57,7 +57,7 @@ export interface TPWorkoutWebhookPayload {
   timestamp: string
 }
 
-// Sport type mapping: TP string → NutriCoach SportType enum
+// Sport type mapping: TP string → Leaxaro SportType enum
 export const TP_SPORT_MAP: Record<string, string> = {
   Bike: 'CYCLING',
   Run: 'RUNNING',

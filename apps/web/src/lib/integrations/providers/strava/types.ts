@@ -68,7 +68,7 @@ export interface StravaWebhookEvent {
   updates?: Record<string, string>
 }
 
-// Sport type mapping: Strava sport_type → NutriCoach SportType enum
+// Sport type mapping: Strava sport_type → Leaxaro SportType enum
 export const STRAVA_SPORT_MAP: Record<string, string> = {
   Run: 'RUNNING',
   TrailRun: 'RUNNING',

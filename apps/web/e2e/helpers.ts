@@ -1,5 +1,5 @@
 /**
- * E2E test helpers — shared utilities for NutriCoach auth tests
+ * E2E test helpers — shared utilities for Leaxaro auth tests
  */
 import { type Page, type BrowserContext, expect } from '@playwright/test'
 
@@ -8,7 +8,7 @@ export const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:310
 // ─── Test accounts ────────────────────────────────────────────────────────────
 export const TEST_USER = {
   name: 'Test Playwright',
-  email: `pw-test-${Date.now()}@nutricoach-test.local`,
+  email: `pw-test-${Date.now()}@leaxaro-test.local`,
   password: 'PlaywrightTest1!',
   weakPassword: 'password',
   mismatchPassword: 'DifferentPass1!',

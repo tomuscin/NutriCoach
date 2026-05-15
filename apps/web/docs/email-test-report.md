@@ -14,7 +14,7 @@
 | `RESEND_API_KEY` | `re_aeGTrp9Z_...` (truncated) | ⚠️ PRESENT, but **INVALID** (HTTP 401) |
 | `EMAIL_FROM` | `tomasz@lexaro.co` | ✅ Set |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3100` | ✅ Set |
-| `NEXT_PUBLIC_APP_NAME` | `NutriCoach` | ✅ Set |
+| `NEXT_PUBLIC_APP_NAME` | `Leaxaro` | ✅ Set |
 | Resend SDK | `resend@6.12.3` | ✅ Installed |
 | `email-service.ts` | Uses `process.env.EMAIL_FROM` | ✅ Correct |
 
@@ -38,10 +38,10 @@ DKIM/SPF must be configured in the Resend dashboard under this domain.
   "config": {
     "hasResendKey": true,
     "resendKeyPrefix": "re_......",
-    "emailFrom": "NutriCoach Dev <tomasz@lexaro.co>",
+    "emailFrom": "Leaxaro Dev <tomasz@lexaro.co>",
     "senderDomain": "lexaro.co",
     "appUrl": "http://localhost:3100",
-    "appName": "NutriCoach"
+    "appName": "Leaxaro"
   },
   "usage": "POST /api/dev/test-email  body: { \"to\": \"you@example.com\" }"
 }
@@ -66,7 +66,7 @@ curl -s -X POST http://localhost:3100/api/dev/test-email \
   "resendStatus": 401,
   "elapsed": 283,
   "to": "uscinski.tomek@gmail.com",
-  "from": "NutriCoach Dev <tomasz@lexaro.co>",
+  "from": "Leaxaro Dev <tomasz@lexaro.co>",
   "config": {
     "senderDomain": "lexaro.co",
     "appUrl": "http://localhost:3100"
@@ -97,7 +97,7 @@ The `RESEND_API_KEY` stored in `apps/web/.env.local` is **expired or revoked** i
 
 1. Go to [https://resend.com/api-keys](https://resend.com/api-keys)
 2. Delete the current key `re_aeGTrp9Z_...`
-3. Create a new key (name: `nutricoach-dev`)
+3. Create a new key (name: `leaxaro-dev`)
 4. Copy the full key (shown only once)
 
 ### Step 2 — Update `.env.local`
@@ -127,8 +127,8 @@ Expected success response:
   "ok": true,
   "messageId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
   "to": "uscinski.tomek@gmail.com",
-  "from": "NutriCoach Dev <tomasz@lexaro.co>",
-  "subject": "NutriCoach — test wysyłki email",
+  "from": "Leaxaro Dev <tomasz@lexaro.co>",
+  "subject": "Leaxaro — test wysyłki email",
   "elapsed": 300,
   ...
 }

@@ -1,6 +1,6 @@
 # Theme System
 
-NutriCoach uses a production-grade dark mode system based on `next-themes` + Tailwind CSS variables.
+Leaxaro uses a production-grade dark mode system based on `next-themes` + Tailwind CSS variables.
 
 ---
 
@@ -9,7 +9,7 @@ NutriCoach uses a production-grade dark mode system based on `next-themes` + Tai
 ```
 next-themes (ThemeProvider)
   └── attribute="class"       → adds/removes .dark on <html>
-  └── storageKey="nutricoach-theme"
+  └── storageKey="leaxaro-theme"
   └── defaultTheme="system"
   └── enableSystem             → follows OS preference
 
@@ -32,7 +32,7 @@ No-flash script (inline in <head>)
 
 ## Persistence
 
-- `localStorage` key: `nutricoach-theme`
+- `localStorage` key: `leaxaro-theme`
 - DB field: `UserPreferences.darkMode` (system | light | dark)
 - Server reads DB → passes `defaultTheme` to `ThemeProvider`
 

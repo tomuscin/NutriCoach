@@ -2,7 +2,7 @@
 
 // ThemeProvider — wraps next-themes for SSR-safe dark mode
 // Modes: system | light | dark
-// Persistence: localStorage (key: "nutricoach-theme")
+// Persistence: localStorage (key: "leaxaro-theme")
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
@@ -18,7 +18,7 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: Props) {
       attribute="class"
       defaultTheme={defaultTheme}
       enableSystem
-      storageKey="nutricoach-theme"
+      storageKey="leaxaro-theme"
       disableTransitionOnChange={false}
     >
       {children}

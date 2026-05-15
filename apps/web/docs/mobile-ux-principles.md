@@ -1,4 +1,4 @@
-# Mobile UX Principles — NutriCoach ETAP 7
+# Mobile UX Principles — Leaxaro ETAP 7
 
 ## Core Patterns
 

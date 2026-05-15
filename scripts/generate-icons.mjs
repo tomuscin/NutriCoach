@@ -1,5 +1,5 @@
 /**
- * NutriCoach — PWA Icon Generator
+ * Leaxaro — PWA Icon Generator
  * Run: node scripts/generate-icons.mjs
  *
  * Generates all required PWA icons from SVG source using sharp.
@@ -98,7 +98,7 @@ async function makePNG(svgString, outputPath, size) {
 // ─── Icon manifest ────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('\nNutriCoach — Generating PWA Icons\n')
+  console.log('\nLeaxaro — Generating PWA Icons\n')
 
   // Standard icons
   const standardSizes = [16, 32, 48, 72, 96, 128, 192, 256, 384, 512]

@@ -14,6 +14,8 @@ type NodeWithChildren = {
   status: string
   priority: string
   order: number
+  sortKey: string
+  scope: string
   tags: Tag[]
   _count: Count
   children: NodeWithChildren[]
@@ -25,57 +27,84 @@ interface RoadmapTreeProps {
 }
 
 export function RoadmapTree({ node, depth }: RoadmapTreeProps) {
-  const [expanded, setExpanded] = useState(depth < 1 || node.status === 'in_progress')
+  const defaultExpanded = depth > 0
+    ? true
+    : node.status === 'in_progress' || node.status === 'blocked'
+
+  const [expanded, setExpanded] = useState(defaultExpanded)
 
   const hasChildren = node.children.length > 0
+  const isDone = node.status === 'done'
+  const isStrategic = node.scope === 'strategic_backlog'
 
   return (
-    <div>
+    <div className={`${depth === 0 ? 'mb-0.5' : ''}`}>
       {/* Node row */}
       <div
         className={`
-          group flex items-start gap-0 rounded hover:bg-bg-elevated transition-colors
-          ${depth === 0 ? 'py-1' : ''}
+          group relative flex items-center gap-0 rounded transition-colors
+          hover:bg-bg-elevated
+          ${isDone && depth === 0 ? 'opacity-50' : ''}
         `}
-        style={{ paddingLeft: `${depth * 20}px` }}
+        style={{ paddingLeft: `${depth * 16}px` }}
       >
+        {/* Hierarchy line — shown for children */}
+        {depth > 0 && (
+          <div
+            className="absolute left-0 top-0 bottom-0 flex items-center"
+            style={{ left: `${(depth - 1) * 16 + 8}px` }}
+          >
+            <div className="w-px h-full bg-bg-border" />
+          </div>
+        )}
+
         {/* Expand toggle */}
         <button
           onClick={() => setExpanded(!expanded)}
           className={`
-            flex-shrink-0 w-5 h-7 flex items-center justify-center
+            relative z-10 flex-shrink-0 w-5 h-7 flex items-center justify-center
             text-text-tertiary hover:text-text-secondary transition-colors
             ${!hasChildren ? 'opacity-0 pointer-events-none' : ''}
           `}
         >
           <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
+            width="8"
+            height="8"
+            viewBox="0 0 8 8"
             fill="none"
-            className={`transition-transform ${expanded ? 'rotate-90' : ''}`}
+            className={`transition-transform duration-100 ${expanded ? 'rotate-90' : ''}`}
           >
-            <path d="M3 2l4 3-4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M2.5 1.5l3 2.5-3 2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
         {/* Status dot */}
-        <div className="flex-shrink-0 w-4 h-7 flex items-center justify-center">
-          <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[node.status] ?? 'bg-text-tertiary'}`} />
+        <div className="flex-shrink-0 w-3.5 h-7 flex items-center justify-center">
+          <span className={`rounded-full ${
+            depth === 0 ? 'w-2 h-2' : 'w-1.5 h-1.5'
+          } ${STATUS_DOT[node.status] ?? 'bg-text-tertiary'}`} />
         </div>
 
         {/* Content */}
         <RoadmapNode node={node} depth={depth} />
+
+        {/* Strategic badge */}
+        {isStrategic && depth === 0 && (
+          <span className="chip flex-shrink-0 self-center mr-2">strategic</span>
+        )}
       </div>
 
       {/* Children */}
       {expanded && hasChildren && (
-        <div>
-          {node.children.map((child) => (
-            <RoadmapTree key={child.id} node={child} depth={depth + 1} />
-          ))}
+        <div className="relative">
+          {[...node.children]
+            .sort((a, b) => a.order - b.order)
+            .map((child) => (
+              <RoadmapTree key={child.id} node={child} depth={depth + 1} />
+            ))}
         </div>
       )}
     </div>
   )
 }
+

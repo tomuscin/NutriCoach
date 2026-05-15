@@ -61,7 +61,7 @@ function checkEnvPresence(): ComponentHealth {
 export async function GET() {
   const response: HealthResponse = {
     status: 'ok',
-    app: 'NutriCoach',
+    app: 'Leaxaro',
     version: APP_VERSION,
     env: DEPLOY_ENV,
     timestamp: new Date().toISOString(),

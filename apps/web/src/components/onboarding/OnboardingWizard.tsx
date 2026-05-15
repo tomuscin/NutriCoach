@@ -147,7 +147,7 @@ function WelcomeStep() {
         <Zap className="h-10 w-10 text-primary"/>
       </div>
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Witaj w NutriCoach!</h2>
+        <h2 className="text-2xl font-bold">Witaj w Leaxaro!</h2>
         <p className="text-muted-foreground leading-relaxed max-w-sm">
           Personalizowany coaching żywieniowy oparty na Twoich danych treningowych i AI.
         </p>
@@ -263,7 +263,7 @@ function TrainingPeaksStep() {
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-semibold">Połącz TrainingPeaks</h2>
-        <p className="text-sm text-muted-foreground">NutriCoach synchronizuje dane treningowe z TrainingPeaks, aby dostosować rekomendacje kaloryczne do każdego dnia.</p>
+        <p className="text-sm text-muted-foreground">Leaxaro synchronizuje dane treningowe z TrainingPeaks, aby dostosować rekomendacje kaloryczne do każdego dnia.</p>
       </div>
       <div className="rounded-xl bg-muted/50 border border-border p-4 space-y-3">
         {[

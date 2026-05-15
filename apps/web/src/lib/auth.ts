@@ -226,7 +226,7 @@ export async function requireAuth(): Promise<SessionUser> {
   ) {
     return {
       id: 'dev-user-bypass',
-      email: 'dev@nutricoach.local',
+      email: 'dev@leaxaro.local',
       name: 'Dev User',
       role: 'USER' as SessionUser['role'],
       status: 'ACTIVE' as SessionUser['status'],

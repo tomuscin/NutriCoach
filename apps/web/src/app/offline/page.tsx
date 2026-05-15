@@ -6,7 +6,7 @@ export default function OfflinePage() {
         <div className="text-5xl">📡</div>
         <h1 className="text-2xl font-bold text-foreground">Brak połączenia</h1>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          NutriCoach potrzebuje połączenia z internetem, aby wyświetlić Twoje dane.
+          Leaxaro potrzebuje połączenia z internetem, aby wyświetlić Twoje dane.
           Sprawdź połączenie i spróbuj ponownie.
         </p>
         <button

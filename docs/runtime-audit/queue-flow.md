@@ -1,8 +1,8 @@
-# Queue & Cron Flow — NutriCoach (ETAP 6.5+)
+# Queue & Cron Flow — Leaxaro (ETAP 6.5+)
 
 ## Architecture: Vercel Cron Jobs
 
-NutriCoach uses **Vercel Cron Jobs** (not BullMQ/Redis) for all background work.
+Leaxaro uses **Vercel Cron Jobs** (not BullMQ/Redis) for all background work.
 Rationale: shared-hosting MySQL, no Redis available, serverless deployment.
 
 All cron handlers are in `/api/cron/` and secured by `CRON_SECRET` header.

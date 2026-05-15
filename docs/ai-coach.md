@@ -1,8 +1,8 @@
-# NutriCoach — AI Coach
+# Leaxaro — AI Coach
 
 ## Concept
 
-The AI Coach is the core differentiator of NutriCoach.
+The AI Coach is the core differentiator of Leaxaro.
 It operates as a **proactive, data-driven personal coach** — not a generic chatbot.
 
 Key principle: **AI speaks from data, not from generalizations.**

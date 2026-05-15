@@ -1,6 +1,6 @@
 # Design Tokens
 
-NutriCoach semantic color token reference. All tokens are HSL values in CSS variables.
+Leaxaro semantic color token reference. All tokens are HSL values in CSS variables.
 
 ---
 
@@ -14,7 +14,7 @@ NutriCoach semantic color token reference. All tokens are HSL values in CSS vari
 | `--card-foreground` | `222 20% 10%` | Text on cards |
 | `--popover` | `0 0% 100%` | Floating panels |
 | `--popover-foreground` | `222 20% 10%` | Text on popovers |
-| `--primary` | `191 85% 33%` | NutriCoach teal |
+| `--primary` | `191 85% 33%` | Leaxaro teal |
 | `--primary-foreground` | `0 0% 100%` | Text on primary |
 | `--secondary` | `210 22% 94%` | Secondary surfaces |
 | `--secondary-foreground` | `222 20% 25%` | Text on secondary |

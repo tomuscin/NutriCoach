@@ -1,6 +1,6 @@
 // @nutricoach/ui — Shared component library
 // Built on shadcn/ui + Radix UI primitives
-// Design tokens: NutriCoach brand, dark/light mode
+// Design tokens: Leaxaro brand, dark/light mode
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRIMITIVE COMPONENTS (from shadcn/ui)

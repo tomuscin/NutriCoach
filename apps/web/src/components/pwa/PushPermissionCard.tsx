@@ -61,7 +61,7 @@ function PushEducationModal({
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-foreground text-base">Powiadomienia NutriCoach</h2>
+            <h2 className="font-semibold text-foreground text-base">Powiadomienia Leaxaro</h2>
             <p className="text-sm text-muted-foreground mt-0.5">Co możesz otrzymywać:</p>
           </div>
           <button

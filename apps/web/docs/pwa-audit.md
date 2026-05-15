@@ -1,8 +1,8 @@
-# PWA Audit — NutriCoach (May 2025)
+# PWA Audit — Leaxaro (May 2025)
 
 ## Executive Summary
 
-NutriCoach has a solid PWA foundation (manifest, service worker, push basics) but several critical gaps prevent production-grade installability and offline capability. This audit documents current state, blockers, and recommendations.
+Leaxaro has a solid PWA foundation (manifest, service worker, push basics) but several critical gaps prevent production-grade installability and offline capability. This audit documents current state, blockers, and recommendations.
 
 ---
 
@@ -37,7 +37,7 @@ NutriCoach has a solid PWA foundation (manifest, service worker, push basics) bu
 | `skipWaiting()` on install | ⚠️ | Immediate skipWaiting causes update races |
 | `clients.claim()` | ✅ | Present |
 | Old cache deletion | ✅ | On activate |
-| Cache versioning | ❌ | **Static `nutricoach-v1` — never invalidated on deploy** |
+| Cache versioning | ❌ | **Static `leaxaro-v1` — never invalidated on deploy** |
 | Navigation fallback | ✅ | Basic — uses cached `/offline` |
 | Static asset caching | ✅ | Cache-first for `/_next/static/` |
 | API: network-first | ✅ | Returns JSON 503 when offline |
@@ -55,7 +55,7 @@ NutriCoach has a solid PWA foundation (manifest, service worker, push basics) bu
 | Manifest link | ✅ | Present |
 | `apple-mobile-web-app-capable` | ✅ | Present |
 | `apple-mobile-web-app-status-bar-style` | ✅ | `black-translucent` |
-| `apple-mobile-web-app-title` | ✅ | NutriCoach |
+| `apple-mobile-web-app-title` | ✅ | Leaxaro |
 | `viewport: viewportFit=cover` | ✅ | Present |
 | `maximum-scale=1` | ✅ | Present |
 | Theme color meta (light/dark) | ✅ | Via Viewport export |
@@ -114,7 +114,7 @@ NutriCoach has a solid PWA foundation (manifest, service worker, push basics) bu
 2. **No maskable icons** — Android adaptive icons show white square without maskable variant.
 3. **Manifest missing `id`** — Required for install deduplication in Chrome 113+.
 4. **No install UX** — No `InstallPrompt` component means users can't discover install option.
-5. **SW never updates** — `CACHE_NAME = 'nutricoach-v1'` is static, so cached assets are never refreshed after deploy.
+5. **SW never updates** — `CACHE_NAME = 'leaxaro-v1'` is static, so cached assets are never refreshed after deploy.
 
 ---
 

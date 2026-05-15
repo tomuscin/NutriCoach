@@ -2,7 +2,7 @@
   "name": "@nutricoach/workers",
   "version": "0.1.0",
   "private": true,
-  "description": "NutriCoach background workers — AI jobs, sync jobs, notifications",
+  "description": "Leaxaro background workers — AI jobs, sync jobs, notifications",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc --project tsconfig.json",

@@ -1,8 +1,8 @@
 {
-  "id": "/nutricoach/",
-  "name": "NutriCoach",
-  "short_name": "NutriCoach",
-  "description": "AI Personal Coach dla sportowców — żywienie, trening, regeneracja. Personalizowane briefy poranne, analiza diety i monitorowanie regeneracji.",
+  "id": "/leaxaro/",
+  "name": "Leaxaro",
+  "short_name": "Leaxaro",
+  "description": "AI-native Conversational Intelligence Platform — żywienie, trening, regeneracja. Personalizowany coaching konwersacyjny, analiza diety i monitorowanie regeneracji.",
   "lang": "pl",
   "dir": "ltr",
   "start_url": "/dashboard?utm_source=pwa&utm_medium=homescreen",
@@ -42,7 +42,7 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "NutriCoach — widok na desktopie"
+      "label": "Leaxaro — widok na desktopie"
     }
   ],
 

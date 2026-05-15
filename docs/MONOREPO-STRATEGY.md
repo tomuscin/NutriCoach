@@ -1,8 +1,8 @@
-# NutriCoach — Monorepo Strategy
+# Leaxaro — Monorepo Strategy
 
 ## Tool: Turborepo + npm workspaces
 
-NutriCoach uses **Turborepo** for task orchestration and **npm workspaces** for package management.
+Leaxaro uses **Turborepo** for task orchestration and **npm workspaces** for package management.
 
 This combination was chosen for:
 - zero-config local dev (single `npm run dev` at root)
@@ -17,7 +17,7 @@ This combination was chosen for:
 ```
 package.json (root)       # workspace config, devDependencies
 apps/
-  web/                    # Next.js 14 app — "nutricoach-web"
+  web/                    # Next.js 14 app — "leaxaro-web"
   api/                    # future: standalone API
   workers/                # future: background job workers
 packages/
@@ -82,7 +82,7 @@ services/
 
 ## Future Migration Path
 
-If NutriCoach grows to require pnpm workspaces (stricter isolation, phantom deps fix):
+If Leaxaro grows to require pnpm workspaces (stricter isolation, phantom deps fix):
 1. Replace `package-lock.json` with `pnpm-lock.yaml`
 2. Add `pnpm-workspace.yaml` at root
 3. Update CI/CD workflows

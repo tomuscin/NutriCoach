@@ -1,8 +1,8 @@
 {
-  "name": "nutricoach",
+  "name": "leaxaro",
   "version": "0.1.0",
   "private": true,
-  "description": "NutriCoach — AI Personal Coach for nutrition, training and recovery",
+  "description": "Leaxaro — AI-native Conversational Intelligence Platform for health, nutrition and performance",
   "workspaces": [
     "apps/*",
     "packages/*",
@@ -23,6 +23,9 @@
     "db:seed": "turbo run db:seed",
     "infra:validate": "node scripts/validate-infra.mjs",
     "infra:migrate": "node -e \"require('dotenv').config({path:'apps/web/.env.local'})\" && npx prisma db push",
+    "context:build": "npm run context:build --workspace=@leaxaro/pmos",
+    "sync:pmos-runtime": "npm run sync:pmos-runtime --workspace=@leaxaro/pmos",
+    "sync:pmos-conversations": "npm run sync:pmos-conversations --workspace=@leaxaro/pmos",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "prepare": "husky",
     "postinstall": "prisma generate --schema=prisma/schema.prisma"

@@ -1,4 +1,4 @@
-# Mobile Night UX — NutriCoach
+# Mobile Night UX — Leaxaro
 
 ## Design Philosophy
 

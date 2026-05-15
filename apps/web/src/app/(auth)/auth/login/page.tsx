@@ -14,7 +14,7 @@ export default function LoginPage() {
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-lg font-bold mb-4 shadow-elevation-3">
             N
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">NutriCoach</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Leaxaro</h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
             AI Personal Coach — nutrition, training &amp; recovery
           </p>

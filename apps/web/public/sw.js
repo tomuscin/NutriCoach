@@ -1,4 +1,4 @@
-// NutriCoach Service Worker — Production v3
+// Leaxaro Service Worker — Production v3
 // Architecture: Offline-first, stale-while-revalidate, versioned caches.
 // Auth/session routes always bypass cache — network only.
 // Static assets: immutable cache-first (Next.js content-hashed chunks).
@@ -274,7 +274,7 @@ async function navigateFetch(request) {
 
     // Last resort
     return new Response(
-      `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Offline — NutriCoach</title>
+      `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>Offline — Leaxaro</title>
       <meta name="viewport" content="width=device-width,initial-scale=1"/></head>
       <body style="background:#0d1117;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui">
       <div style="text-align:center;padding:2rem"><h1 style="font-size:1.25rem;margin-bottom:1rem">Brak połączenia</h1>
@@ -295,15 +295,15 @@ self.addEventListener('push', (event) => {
   try {
     payload = event.data.json()
   } catch {
-    payload = { title: 'NutriCoach', body: event.data.text() }
+    payload = { title: 'Leaxaro', body: event.data.text() }
   }
 
-  const title = payload.title ?? 'NutriCoach'
+  const title = payload.title ?? 'Leaxaro'
   const options = {
     body: payload.body ?? '',
     icon: '/icons/icon-192.png',
     badge: '/icons/badge-72.png',
-    tag: payload.tag ?? 'nutricoach-default',
+    tag: payload.tag ?? 'leaxaro-default',
     data: payload.data ?? {},
     actions: payload.actions ?? [],
     requireInteraction: payload.requireInteraction ?? false,

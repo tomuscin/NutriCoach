@@ -1,4 +1,4 @@
-# NutriCoach — Domain Model
+# Leaxaro — Domain Model
 
 ## Core Entities
 

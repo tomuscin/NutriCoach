@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * NutriCoach — Playwright E2E configuration
+ * Leaxaro — Playwright E2E configuration
  * Targets the local dev server at port 3100.
  * Tests run against a real DB — use DEV_BYPASS_AUTH=false for auth tests.
  */

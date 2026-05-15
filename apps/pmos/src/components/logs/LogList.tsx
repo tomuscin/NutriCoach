@@ -24,10 +24,11 @@ interface LogListProps {
 
 export function LogList({ logs }: LogListProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {logs.map((log) => (
         <LogCard key={log.id} log={log} />
       ))}
     </div>
   )
 }
+

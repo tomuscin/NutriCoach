@@ -29,5 +29,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# PMOS Context (auto-generated — do not commit)
+.context/runtime-context.md
+
 # Vercel
 .vercel

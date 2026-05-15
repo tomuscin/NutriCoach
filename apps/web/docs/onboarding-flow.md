@@ -1,4 +1,4 @@
-# Onboarding Flow — NutriCoach ETAP 7
+# Onboarding Flow — Leaxaro ETAP 7
 
 ## Overview
 

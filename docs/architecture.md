@@ -1,8 +1,8 @@
-# NutriCoach — Architecture
+# Leaxaro — Architecture
 
 ## Overview
 
-NutriCoach is an **AI-native Conversational Intelligence Platform** for nutrition, training, and recovery. It is NOT a dashboard app, NOT a calorie tracker, and NOT a chatbot wrapper.
+Leaxaro is an **AI-native Conversational Intelligence Platform** for nutrition, training, and recovery. It is NOT a dashboard app, NOT a calorie tracker, and NOT a chatbot wrapper.
 
 The platform is built on a conversational-first, runtime-first, event-driven, memory-oriented, and capability-based architecture.
 
@@ -10,21 +10,21 @@ The platform is built on a conversational-first, runtime-first, event-driven, me
 
 ## Ecosystem Position
 
-NutriCoach is the **third autonomous development ecosystem**, completely isolated from:
+Leaxaro is the **third autonomous development ecosystem**, completely isolated from:
 
 - **Profitia** — B2B SaaS procurement intelligence
 - **Private** — personal projects and tools
 
-NutriCoach has its own: GitHub repo, Vercel deployment, Neon database, OpenAI key, Sentry, PostHog, Upstash, billing, environment variables.
+Leaxaro has its own: GitHub repo, Vercel deployment, Neon database, OpenAI key, Sentry, PostHog, Upstash, billing, environment variables.
 
 ---
 
 ## Root Structure
 
 ```
-/NutriCoach
+/Leaxaro
 ├── apps/
-│   ├── web/                    # Next.js 14 — main PWA (nutricoach-web)
+│   ├── web/                    # Next.js 14 — main PWA (leaxaro-web)
 │   ├── api/                    # standalone API (future)
 │   └── workers/                # background workers (future)
 ├── packages/
@@ -84,6 +84,27 @@ See [NCIC-FOUNDATION.md](./NCIC-FOUNDATION.md).
 | Observability | Sentry + PostHog |
 | Email | Resend |
 | Vector Memory | future: pgvector / Pinecone |
+
+---
+
+## Brand Evolution
+
+**NutriCoach → Leaxaro** (renamed 2026-05-13)
+
+The working title "NutriCoach" constrained the product to nutrition/diet-app positioning.
+Leaxaro is category-flexible, more premium, and aligned with the conversational runtime vision.
+
+**What changed:**
+- Product name, workspace, metadata, PWA identity, docs, env app name
+- Canonical brand in all user-facing surfaces
+
+**What intentionally did NOT change:**
+- Package namespace `@nutricoach/*` — technical identifier, migration path TBD
+- Database name `tomuscin_nutricoach` — live production DB (WEBD.pl)
+- Vercel project link (`.vercel/project.json`) — tied to deployed infrastructure
+- NCIC — "Nutrition Conversational Intelligence Core" remains the internal runtime architecture layer within Leaxaro
+
+**NCIC note:** NCIC is an internal runtime architecture layer within Leaxaro. The "Nutrition" in NCIC refers to the origin domain but NCIC now spans nutrition, training, recovery, and behavioral intelligence.
 
 ---
 

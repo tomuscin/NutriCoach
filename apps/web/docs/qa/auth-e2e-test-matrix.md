@@ -1,4 +1,4 @@
-# NutriCoach Auth — E2E Test Matrix
+# Leaxaro Auth — E2E Test Matrix
 **Scope**: Authentication, Email Verification, Password Reset, Onboarding, Sessions, Push, Notifications, Integrations  
 **Environment**: Local dev (port 3100), MySQL 8 (webd.pl), Resend email  
 **Coverage**: Functional, Security, UX, Mobile, Edge Cases
@@ -258,7 +258,7 @@ Open redirect was fixed in ETAP 7 via `safeCallbackUrl()` in LoginForm.tsx. Vali
 
 ```bash
 # Prerequisites: dev server running on :3100
-cd /Users/tomaszuscinski/Projects/private/NutriCoach/apps/web
+cd /Users/tomaszuscinski/Projects/private/Leaxaro/apps/web
 
 # Run all tests
 npx playwright test

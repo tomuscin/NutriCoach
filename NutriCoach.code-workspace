@@ -1,7 +1,7 @@
 {
   "folders": [
     {
-      "name": "NutriCoach",
+      "name": "Leaxaro",
       "path": "."
     }
   ],
@@ -24,7 +24,7 @@
     },
     "github.copilot.chat.codeGeneration.instructions": [
       {
-        "text": "This is NutriCoach — an AI-native Conversational Intelligence Platform. Architecture: conversational-first, runtime-first, event-driven, memory-oriented, capability-based. Core package: packages/ncic (NCIC). Apps use packages, not direct service calls. All code is TypeScript. No shared secrets or infrastructure with Profitia or Private ecosystems."
+        "text": "This is Leaxaro — an AI-native Conversational Intelligence Platform for health, nutrition and performance. Architecture: conversational-first, runtime-first, event-driven, memory-oriented, capability-based. Core package: packages/ncic (NCIC). Apps use packages, not direct service calls. All code is TypeScript. No shared secrets or infrastructure with Profitia or Private ecosystems."
       }
     ]
   },
@@ -40,7 +40,7 @@
   "launch": {
     "configurations": [
       {
-        "name": "NutriCoach Web (dev)",
+        "name": "Leaxaro Web (dev)",
         "type": "node",
         "request": "launch",
         "runtimeExecutable": "npm",

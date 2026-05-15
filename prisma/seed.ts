@@ -1,4 +1,4 @@
-// NutriCoach — Database Seed
+// Leaxaro — Database Seed
 // Realistic data for a road cyclist in caloric deficit (redukcja)
 // Run: npx tsx prisma/seed.ts (from project root with DATABASE_URL set)
 
@@ -7,7 +7,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 // ─── Seed config ─────────────────────────────────────────────────────────────
-const SEED_EMAIL = 'tomasz@nutricoach.local'
+const SEED_EMAIL = 'tomasz@leaxaro.local'
 
 const TODAY = new Date()
 const daysAgo = (n: number): Date => {
@@ -24,7 +24,7 @@ const dateOnly = (n: number): Date => {
 }
 
 async function main() {
-  console.log('🌱 Seeding NutriCoach database...')
+  console.log('🌱 Seeding Leaxaro database...')
   console.log('   Profile: Road cyclist, male, 34y, 78kg → 73kg goal')
   console.log('   Scenario: Caloric deficit, FTP 270W, CTL build')
 
